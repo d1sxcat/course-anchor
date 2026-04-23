@@ -1,0 +1,66 @@
+{
+  "./tests/fixtures/openimg/public/img/user-png-w-832-h-832-fit-base.avif": {
+    "size": 3019,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/course-anchor-test/users/cmo4j4nsg0001ljh69909linb/profile-images/1776528381376-hhd77qdt91xbzowgc4dq1dq5-downloaded-file-w-832-h-832-fit-base.avif": {
+    "size": 8896,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776711292032-ud1d2z47rdi48lvtvdu6e6jy-jpeg-w-832-h-832-fit-base.avif": {
+    "size": 3131,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776711292032-ud1d2z47rdi48lvtvdu6e6jy-jpeg-w-base-h-base-fit-base.jpeg": {
+    "size": 21923,
+    "contentType": "image/jpeg"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776711408913-xgbr6lzinbkqnxk6y6po1woz-png-w-832-h-832-fit-base.avif": {
+    "size": 5088,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776711408913-xgbr6lzinbkqnxk6y6po1woz-png-w-256-h-256-fit-base.avif": {
+    "size": 2500,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776711408913-xgbr6lzinbkqnxk6y6po1woz-png-w-base-h-base-fit-base.png": {
+    "size": 38670,
+    "contentType": "image/png"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776753777335-lshwy6k4apl7q2uid3ykrkmu-jpeg-w-832-h-832-fit-base.avif": {
+    "size": 3131,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776753777335-lshwy6k4apl7q2uid3ykrkmu-jpeg-w-base-h-base-fit-base.jpeg": {
+    "size": 21923,
+    "contentType": "image/jpeg"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776802677795-qkrs83n4xf81q2pi9gaq3ra6-png-w-832-h-832-fit-base.avif": {
+    "size": 5088,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776802677795-qkrs83n4xf81q2pi9gaq3ra6-png-w-base-h-base-fit-base.png": {
+    "size": 38670,
+    "contentType": "image/png"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776802710029-bog43mpj414ka0fywqfjmxxi-jpeg-w-832-h-832-fit-base.avif": {
+    "size": 3131,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776802710029-bog43mpj414ka0fywqfjmxxi-jpeg-w-256-h-256-fit-base.avif": {
+    "size": 1396,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776802710029-bog43mpj414ka0fywqfjmxxi-jpeg-w-base-h-base-fit-base.jpeg": {
+    "size": 21923,
+    "contentType": "image/jpeg"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776894772244-sbhz4rg1cui6ypk201bwv2or-png-w-832-h-832-fit-base.avif": {
+    "size": 6453,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776894772244-sbhz4rg1cui6ypk201bwv2or-png-w-256-h-256-fit-base.avif": {
+    "size": 2834,
+    "contentType": "image/avif"
+  }
+}

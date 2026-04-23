@@ -1,0 +1,13 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools/*"
+allowBuilds:
+  '@prisma/engines': true
+  '@sentry-internal/node-cpu-profiler': true
+  '@sentry/cli': true
+  esbuild: true
+  msw: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true

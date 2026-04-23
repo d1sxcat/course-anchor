@@ -1,0 +1,40 @@
+{
+  "name": "@course-anchor/db",
+  "private": true,
+  "type": "module",
+    "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "db:generate": "prisma generate --sql", 
+    "db:migrate": "prisma migrate dev", 
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "@prisma/instrumentation": "^7.7.0",
+    "dotenv": "^17.4.1",
+    "pg": "^8.20.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@course-anchor/eslint-config": "workspace:*",
+    "@course-anchor/tsconfig": "workspace:*",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.0",
+    "prettier": "^3.8.1",
+    "prisma": "^7.7.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

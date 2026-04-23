@@ -1,0 +1,8 @@
+{
+  "extends": "@course-anchor/tsconfig/compiled-package.json",
+  "include": ["src", "./prisma.config.ts", "./prisma/seed.ts"],
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "exclude": ["node_modules"]
+}

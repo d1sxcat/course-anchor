@@ -1,0 +1,7 @@
+{
+  "name": "@course-anchor/tsconfig",
+  "private": true,
+  "files": [
+    "*.json"
+  ]
+}

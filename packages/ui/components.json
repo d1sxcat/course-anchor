@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@course-anchor/ui/components",
+    "utils": "@course-anchor/ui/lib/utils",
+    "hooks": "@course-anchor/ui/hooks",
+    "lib": "@course-anchor/ui/lib",
+    "ui": "@course-anchor/ui/components"
+  },
+  "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "subtle"
+}

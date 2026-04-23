@@ -1,0 +1,25 @@
+{
+  "printWidth": 80,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "useTabs": false,
+  "endOfLine": "auto",
+  "singleAttributePerLine": false,
+  "bracketSameLine": false,
+  "jsxSingleQuote": false,
+  "quoteProps": "as-needed",
+  "semi": false,
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports"
+  ],
+  "tailwindAttributes": ["class", "className", "ngClass", ".*[cC]lassName"],
+  "tailwindFunctions": ["clsx", "cn", "cva"],
+  "importOrder": ["^react(.*)$", "^@?\\w", "^[~/]", "^[./]"],
+  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
+  "importOrderTypeScriptVersion": "5.0.0",
+  "importOrderCaseSensitive": false
+}

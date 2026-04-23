@@ -1,0 +1,19 @@
+{
+  "extends": "@course-anchor/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@course-anchor/ui/*": ["./src/*"]
+    }
+  },
+  "include": [".", "../../apps/app/app/components/ui/link.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
