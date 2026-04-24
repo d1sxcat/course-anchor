@@ -1,7 +1,7 @@
 import { invariant } from '@epic-web/invariant'
 import { redirect } from 'react-router'
 import { safeRedirect } from 'remix-utils/safe-redirect'
-import { twoFAVerificationType } from '~/routes/settings/profile/two-factor/_layout'
+import { twoFAVerificationType } from '~/routes/_user/settings/two-factor/_layout'
 import { getUserId, sessionKey } from '~/lib/auth.server'
 import { prisma } from '~/lib/db.server'
 import { combineResponseInits } from '~/lib/misc'
@@ -82,10 +82,10 @@ export async function handleNewSession(
 
 export async function handleVerification({
 	request,
-	submission,
+	result,
 }: VerifyFunctionArgs) {
 	invariant(
-		submission.status === 'success',
+		result.success,
 		'Submission should be successful by now',
 	)
 	const authSession = await authSessionStorage.getSession(
@@ -96,7 +96,7 @@ export async function handleVerification({
 	)
 
 	const remember = verifySession.get(rememberKey)
-	const { redirectTo } = submission.value
+	const { redirectTo } = result.data
 	const headers = new Headers()
 	authSession.set(verifiedTimeKey, Date.now())
 

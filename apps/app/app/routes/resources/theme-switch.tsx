@@ -1,30 +1,30 @@
 import { data, redirect, useFetcher, useFetchers } from 'react-router'
-import { getFormProps, useForm } from '@conform-to/react'
-import { parseWithZod } from '@conform-to/zod/v4'
+import { parseSubmission, report } from '@conform-to/react/future'
+import { coerceFormValue } from '@conform-to/zod/v4/future'
 import { invariantResponse } from '@epic-web/invariant'
 import { Laptop, Moon, Sun } from 'lucide-react'
 import { ServerOnly } from 'remix-utils/server-only'
 import { z } from 'zod/v4'
+import { useForm } from '~/components/form'
 import { useHints, useOptionalHints } from '~/lib/client-hints'
 import { useOptionalRequestInfo, useRequestInfo } from '~/lib/request-info'
 import { setTheme, type Theme } from '~/lib/theme.server'
 import { type Route } from './+types/theme-switch'
 
-const ThemeFormSchema = z.object({
+const ThemeFormSchema = coerceFormValue(z.object({
   theme: z.enum(['system', 'light', 'dark']),
   // this is useful for progressive enhancement
   redirectTo: z.string().optional(),
-})
+}))
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData()
-  const submission = parseWithZod(formData, {
-    schema: ThemeFormSchema,
-  })
+  const submission = parseSubmission(formData)
+  const result = ThemeFormSchema.safeParse(submission.payload)
 
-  invariantResponse(submission.status === 'success', 'Invalid theme received')
+  invariantResponse(result.success, 'Invalid theme received')
 
-  const { theme, redirectTo } = submission.value
+  const { theme, redirectTo } = result.data
 
   const responseInit = {
     headers: { 'set-cookie': setTheme(theme) },
@@ -32,7 +32,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (redirectTo) {
     return redirect(redirectTo, responseInit)
   } else {
-    return data({ result: submission.reply() }, responseInit)
+    return data({ result: report(submission) }, responseInit)
   }
 }
 
@@ -44,7 +44,7 @@ export function ThemeSwitch({
   const fetcher = useFetcher<typeof action>()
   const requestInfo = useRequestInfo()
 
-  const [form] = useForm({
+  const {form} = useForm(ThemeFormSchema,{
     id: 'theme-switch',
     lastResult: fetcher.data?.result,
   })
@@ -62,7 +62,7 @@ export function ThemeSwitch({
   return (
     <fetcher.Form
       method="POST"
-      {...getFormProps(form)}
+      {...form.props}
       action="/resources/theme-switch"
     >
       <ServerOnly>
@@ -94,12 +94,11 @@ export function useOptimisticThemeMode() {
   )
 
   if (themeFetcher && themeFetcher.formData) {
-    const submission = parseWithZod(themeFetcher.formData, {
-      schema: ThemeFormSchema,
-    })
+    const submission = parseSubmission(themeFetcher.formData)
+    const result = ThemeFormSchema.safeParse(submission.payload)
 
-    if (submission.status === 'success') {
-      return submission.value.theme
+    if (result.success) {
+      return result.data.theme
     }
   }
 }

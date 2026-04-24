@@ -156,8 +156,8 @@ export const FormInput = ({
   type = 'text',
   autoComplete,
   ...props
-}: FieldMetadata<string> &
-  Omit<FormBaseProps<string>, 'children'> & {
+}: FieldMetadata<string | null | undefined> &
+  Omit<FormBaseProps<string | null | undefined>, 'children'> & {
     type?: 'text' | 'email' | 'password'
     autoComplete?: React.HTMLInputAutoCompleteAttribute
   }) => {
@@ -228,10 +228,7 @@ export function FormOTP({
   errors,
   ariaInvalid,
   pattern = REGEXP_ONLY_DIGITS_AND_CHARS,
-}: FieldMetadata<string> &
-  Omit<FormBaseProps<string>, 'children'> & {
-    length?: number
-  }) {
+}: FieldMetadata<string>) {
   const inputOTPRef = useRef<React.ComponentRef<typeof InputOTP>>(null)
   const { value, change, register, blur } = useControl({
     defaultValue: otpProps.defaultValue,

@@ -6,9 +6,9 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 
 async function seed() {
-	const entities = ['user', 'note']
-	const actions = ['create', 'read', 'update', 'delete']
-	const accesses = ['own', 'any'] as const
+	const entities = ['USER', 'NOTE'] as const
+	const actions = ['CREATE', 'READ', 'UPDATE', 'DELETE'] as const
+	const accesses = ['OWN', 'ANY'] as const
 
 	// Upsert all permissions
 	for (const entity of entities) {
@@ -31,7 +31,7 @@ async function seed() {
 			permissions: {
 				connect: (
 					await prisma.permission.findMany({
-						where: { access: 'any' },
+						where: { access: 'ANY' },
 						select: { id: true },
 					})
 				).map(p => ({ id: p.id })),
@@ -47,7 +47,7 @@ async function seed() {
 			permissions: {
 				connect: (
 					await prisma.permission.findMany({
-						where: { access: 'own' },
+						where: { access: 'OWN' },
 						select: { id: true },
 					})
 				).map(p => ({ id: p.id })),

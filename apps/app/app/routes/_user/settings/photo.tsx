@@ -1,20 +1,20 @@
-import { getFormProps, getInputProps, useForm } from '@conform-to/react'
-import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
+import { useState } from 'react'
+import { data, Form, redirect, useNavigation } from 'react-router'
+import { parseSubmission, report } from '@conform-to/react/future'
+import { coerceFormValue } from '@conform-to/zod/v4/future'
+import { Button } from '@course-anchor/ui/components/button'
 import { invariantResponse } from '@epic-web/invariant'
 import { parseFormData } from '@mjackson/form-data-parser'
-import { useState } from 'react'
-import { data, redirect, Form, useNavigation } from 'react-router'
-import { z } from 'zod'
 import { Pencil, Trash } from 'lucide-react'
-import { Button } from '@course-anchor/ui/components/button'
-import { ErrorList } from '~/components/forms'
+import { z } from 'zod'
+import { FormErrors, useForm } from '~/components/form'
 import { StatusButton } from '~/components/ui/status-button'
+import { type BreadcrumbHandle } from '~/hooks/use-breadcrumbs'
 import { requireUserId } from '~/lib/auth.server'
 import { prisma } from '~/lib/db.server'
 import { getUserImgSrc, useDoubleCheck, useIsPending } from '~/lib/misc'
 import { uploadProfileImage } from '~/lib/storage.server'
 import { type Route } from './+types/photo'
-import { type BreadcrumbHandle } from './_layout'
 
 export const handle: BreadcrumbHandle = {
   //breadcrumb: <Icon name="avatar">Photo</Icon>,
@@ -29,15 +29,15 @@ const DeleteImageSchema = z.object({
 
 const NewImageSchema = z.object({
   intent: z.literal('submit'),
-  photoFile: z.file()
+  photoFile: z
+    .file()
     .refine(file => file.size > 0, 'Image is required')
     .refine(file => file.size <= MAX_SIZE, 'Image size must be less than 3MB'),
 })
 
-const PhotoFormSchema = z.discriminatedUnion('intent', [
-  DeleteImageSchema,
-  NewImageSchema,
-])
+const PhotoFormSchema = coerceFormValue(
+  z.discriminatedUnion('intent', [DeleteImageSchema, NewImageSchema])
+)
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request)
@@ -58,32 +58,33 @@ export async function action({ request }: Route.ActionArgs) {
   const userId = await requireUserId(request)
 
   const formData = await parseFormData(request, { maxFileSize: MAX_SIZE })
-  const submission = await parseWithZod(formData, {
-    schema: PhotoFormSchema.transform(async data => {
-      if (data.intent === 'delete') return { intent: 'delete' }
-      if (data.photoFile.size <= 0) return z.NEVER
-      return {
-        intent: data.intent,
-        image: {
-          objectKey: await uploadProfileImage(userId, data.photoFile),
-        },
-      }
-    }),
-    async: true,
-  })
-
-  if (submission.status !== 'success') {
+  const submission = parseSubmission(formData)
+  const result = PhotoFormSchema.safeParse(submission.payload)
+  if (!result.success) {
     return data(
-      { result: submission.reply() },
-      { status: submission.status === 'error' ? 400 : 200 }
+      { result: report(submission, { error: result.error }) },
+      { status: 400 }
     )
   }
 
-  const { image, intent } = submission.value
-
-  if (intent === 'delete') {
+  if (result.data.intent === 'delete') {
     await prisma.userImage.deleteMany({ where: { userId } })
-    return redirect('/settings/profile')
+    return redirect('/settings')
+  }
+
+  if (result.data.photoFile.size <= 0) {
+    return data(
+      {
+        result: report(submission, {
+          error: { fieldErrors: { photoFile: ['Image is required'] } },
+        }),
+      },
+      { status: 400 }
+    )
+  }
+
+  const image = {
+    objectKey: await uploadProfileImage(userId, result.data.photoFile),
   }
 
   await prisma.$transaction(async $prisma => {
@@ -94,7 +95,7 @@ export async function action({ request }: Route.ActionArgs) {
     })
   })
 
-  return redirect('/settings/profile')
+  return redirect('/settings')
 }
 
 export default function PhotoRoute({
@@ -105,19 +106,14 @@ export default function PhotoRoute({
 
   const navigation = useNavigation()
 
-  const [form, fields] = useForm({
+  const { form, fields, intent } = useForm(PhotoFormSchema, {
     id: 'profile-photo',
-    constraint: getZodConstraint(PhotoFormSchema),
     lastResult: actionData?.result,
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: PhotoFormSchema })
-    },
-    shouldRevalidate: 'onBlur',
   })
 
   const isPending = useIsPending()
   const pendingIntent = isPending ? navigation.formData?.get('intent') : null
-  const lastSubmissionIntent = fields.intent.value
+  // const lastSubmissionIntent =
 
   const [newImageSrc, setNewImageSrc] = useState<string | null>(null)
 
@@ -128,7 +124,7 @@ export default function PhotoRoute({
         encType="multipart/form-data"
         className="flex flex-col items-center justify-center gap-10"
         onReset={() => setNewImageSrc(null)}
-        {...getFormProps(form)}
+        {...form.props}
       >
         <img
           src={
@@ -140,7 +136,7 @@ export default function PhotoRoute({
           className="size-52 rounded-full object-cover"
           alt={loaderData.user?.name ?? loaderData.user?.username}
         />
-        <ErrorList errors={fields.photoFile.errors} id={fields.photoFile.id} />
+        <FormErrors errors={fields.photoFile.errors} id={fields.photoFile.id} />
         <div className="flex gap-4">
           {/*
 						We're doing some kinda odd things to make it so this works well
@@ -149,7 +145,10 @@ export default function PhotoRoute({
 						an image has been selected). Progressive enhancement FTW!
 					*/}
           <input
-            {...getInputProps(fields.photoFile, { type: 'file' })}
+            // {...getInputProps(fields.photoFile, { type: 'file' })}
+            name={fields.photoFile.name}
+            id={fields.photoFile.id}
+            type={'file'}
             accept="image/*"
             className="peer sr-only"
             required
@@ -173,26 +172,21 @@ export default function PhotoRoute({
               </label>
             )}
             className="cursor-pointer peer-valid:hidden peer-focus-within:ring-2 peer-focus-visible:ring-2"
-          ></Button>
+          />
           <StatusButton
             name="intent"
             value="submit"
             type="submit"
             className="peer-invalid:hidden"
-            status={
-              pendingIntent === 'submit'
-                ? 'pending'
-                : lastSubmissionIntent === 'submit'
-                  ? (form.status ?? 'idle')
-                  : 'idle'
-            }
+            status={pendingIntent === 'submit' ? 'pending' : 'idle'}
           >
             Save Photo
           </StatusButton>
           <Button
             variant="destructive"
             className="peer-invalid:hidden"
-            {...form.reset.getButtonProps()}
+            type="reset"
+            onClick={() => intent.reset()}
           >
             <Trash /> Reset
           </Button>
@@ -205,22 +199,14 @@ export default function PhotoRoute({
                 name: 'intent',
                 value: 'delete',
               })}
-              status={
-                pendingIntent === 'delete'
-                  ? 'pending'
-                  : lastSubmissionIntent === 'delete'
-                    ? (form.status ?? 'idle')
-                    : 'idle'
-              }
+              status={pendingIntent === 'delete' ? 'pending' : 'idle'}
             >
               <Trash />
-              {doubleCheckDeleteImage.doubleCheck
-                ? 'Are you sure?'
-                : 'Delete'}
+              {doubleCheckDeleteImage.doubleCheck ? 'Are you sure?' : 'Delete'}
             </StatusButton>
           ) : null}
         </div>
-        <ErrorList errors={form.errors} />
+        <FormErrors id={form.errorId} errors={form.errors} />
       </Form>
     </div>
   )

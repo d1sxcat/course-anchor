@@ -62,5 +62,69 @@
   "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmo4j4nsg0001ljh69909linb/profile-images/1776894772244-sbhz4rg1cui6ypk201bwv2or-png-w-256-h-256-fit-base.avif": {
     "size": 2834,
     "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/public/img/user-png-w-256-h-256-fit-base.avif": {
+    "size": 1551,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmobmfyg1000f2ohosztevhk3/profile-images/1776981204128-jx7x5p52rkklaka951am3yd6-png-w-832-h-832-fit-base.avif": {
+    "size": 3970,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmobmfyg1000f2ohosztevhk3/profile-images/1776981204128-jx7x5p52rkklaka951am3yd6-png-w-base-h-base-fit-base.png": {
+    "size": 442172,
+    "contentType": "image/png"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmobmfyg1000f2ohosztevhk3/profile-images/1776981226981-yz2o91b18odrjzijgxo2blhg-png-w-832-h-832-fit-base.avif": {
+    "size": 56558,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmobmfyg1000f2ohosztevhk3/profile-images/1776981226981-yz2o91b18odrjzijgxo2blhg-png-w-256-h-256-fit-base.avif": {
+    "size": 11213,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1776985398956-shyc81bbuyuhjytk0y80xkmt-downloaded-file-w-256-h-256-fit-base.avif": {
+    "size": 3251,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1776985398956-shyc81bbuyuhjytk0y80xkmt-downloaded-file-w-832-h-832-fit-base.avif": {
+    "size": 8896,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1776985398956-shyc81bbuyuhjytk0y80xkmt-downloaded-file-w-base-h-base-fit-base.downloaded-file": {
+    "size": 2631,
+    "contentType": "image/jpeg"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1776986110279-nnpyudqexo0tharpcatoxd82-png-w-832-h-832-fit-base.avif": {
+    "size": 3970,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1776986110279-nnpyudqexo0tharpcatoxd82-png-w-256-h-256-fit-base.avif": {
+    "size": 1799,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1776986110279-nnpyudqexo0tharpcatoxd82-png-w-base-h-base-fit-base.png": {
+    "size": 442172,
+    "contentType": "image/png"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1777027960360-nc5xi764u6afn3eub4i4yfqt-jpg-w-832-h-832-fit-base.avif": {
+    "size": 1055,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmoc384zs000l2oho1dfa61h2/profile-images/1777027960360-nc5xi764u6afn3eub4i4yfqt-jpg-w-base-h-base-fit-base.jpg": {
+    "size": 22779,
+    "contentType": "image/jpeg"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmocyyvns00012yhj4h4d6wo2/profile-images/1777038714992-pd49apg7p2sd4seiuosr9rfg-downloaded-file-w-256-h-256-fit-base.avif": {
+    "size": 3251,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmocyyvns00012yhj4h4d6wo2/profile-images/1777038714992-pd49apg7p2sd4seiuosr9rfg-downloaded-file-w-base-h-base-fit-base.downloaded-file": {
+    "size": 2631,
+    "contentType": "image/jpeg"
+  },
+  "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmocyyvns00012yhj4h4d6wo2/profile-images/1777038714992-pd49apg7p2sd4seiuosr9rfg-downloaded-file-w-832-h-832-fit-base.avif": {
+    "size": 8896,
+    "contentType": "image/avif"
   }
 }

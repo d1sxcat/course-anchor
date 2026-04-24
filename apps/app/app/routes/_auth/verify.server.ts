@@ -1,13 +1,14 @@
 import { report, parseSubmission, type Submission } from '@conform-to/react/future'
 import { data } from 'react-router'
-import { handleVerification as handleChangeEmailVerification } from '~/routes/settings/profile/change-email.server'
-import { twoFAVerificationType } from '~/routes/settings/profile/two-factor/_layout'
+import { type ZodSafeParseResult, z } from 'zod'
+import { handleVerification as handleChangeEmailVerification } from '~/routes/_user/settings/change-email.server'
+import { twoFAVerificationType } from '~/routes/_user/settings/two-factor/_layout'
 import { requireUserId } from '~/lib/auth.server'
 import { prisma } from '~/lib/db.server'
 import { getDomainUrl } from '~/lib/misc'
 import { redirectWithToast } from '~/lib/toast.server'
 import { generateTOTP, verifyTOTP } from '~/lib/totp.server'
-import { type twoFAVerifyVerificationType } from '~/routes/settings/profile/two-factor/verify'
+import { type twoFAVerifyVerificationType } from '~/routes/_user/settings/two-factor/verify'
 import {
 	handleVerification as handleLoginTwoFactorVerification,
 	shouldRequestTwoFA,
@@ -25,7 +26,8 @@ import {
 
 export type VerifyFunctionArgs = {
 	request: Request
-	submission: Submission,
+	submission: Submission
+	result: ZodSafeParseResult<z.infer<typeof VerifySchema>>
 	body: FormData | URLSearchParams
 }
 
@@ -205,18 +207,18 @@ export async function validateRequest(
 	switch (submissionValue[typeQueryParam]) {
 		case 'reset-password': {
 			await deleteVerification()
-			return handleResetPasswordVerification({ request, body, submission })
+			return handleResetPasswordVerification({ request, body, submission, result })
 		}
 		case 'onboarding': {
 			await deleteVerification()
-			return handleOnboardingVerification({ request, body, submission })
+			return handleOnboardingVerification({ request, body, submission, result })
 		}
 		case 'change-email': {
 			await deleteVerification()
-			return handleChangeEmailVerification({ request, body, submission })
+			return handleChangeEmailVerification({ request, body, submission, result })
 		}
 		case '2fa': {
-			return handleLoginTwoFactorVerification({ request, body, submission })
+			return handleLoginTwoFactorVerification({ request, body, submission, result })
 		}
 	}
 }

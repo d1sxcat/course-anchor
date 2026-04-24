@@ -1,10 +1,10 @@
-import { getFormProps, getInputProps, useForm } from '@conform-to/react'
-import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
-import { data, redirect, Form, useSearchParams } from 'react-router'
+import { data, Form, redirect, useSearchParams } from 'react-router'
+import { parseSubmission, report } from '@conform-to/react/future'
+import { coerceFormValue } from '@conform-to/zod/v4/future'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { safeRedirect } from 'remix-utils/safe-redirect'
 import { z } from 'zod'
-import { CheckboxField, ErrorList, Field } from '~/components/forms'
+import { FormCheckbox, FormErrors, FormInput, useForm } from '~/components/form'
 import { Spacer } from '~/components/ui/spacer'
 import { StatusButton } from '~/components/ui/status-button'
 import {
@@ -28,17 +28,19 @@ import { type Route } from './+types/index'
 
 export const onboardingEmailSessionKey = 'onboardingEmail'
 
-const SignupFormSchema = z
-  .object({
-    username: UsernameSchema,
-    name: NameSchema,
-    agreeToTermsOfServiceAndPrivacyPolicy: z.boolean(
-      'You must agree to the terms of service and privacy policy'
-    ),
-    remember: z.boolean().optional(),
-    redirectTo: z.string().optional(),
-  })
-  .and(PasswordAndConfirmPasswordSchema)
+const SignupFormSchema = coerceFormValue(
+  z
+    .object({
+      username: UsernameSchema,
+      name: NameSchema,
+      agreeToTermsOfServiceAndPrivacyPolicy: z.boolean(
+        'You must agree to the terms of service and privacy policy'
+      ),
+      remember: z.boolean().optional(),
+      redirectTo: z.string().optional(),
+    })
+    .and(PasswordAndConfirmPasswordSchema)
+)
 
 async function requireOnboardingEmail(request: Request) {
   await requireAnonymous(request)
@@ -61,46 +63,66 @@ export async function action({ request }: Route.ActionArgs) {
   const email = await requireOnboardingEmail(request)
   const formData = await request.formData()
   await checkHoneypot(formData)
-  const submission = await parseWithZod(formData, {
-    schema: intent =>
-      SignupFormSchema.superRefine(async (data, ctx) => {
-        const existingUser = await prisma.user.findUnique({
-          where: { username: data.username },
-          select: { id: true },
-        })
-        if (existingUser) {
-          ctx.addIssue({
-            path: ['username'],
-            code: z.ZodIssueCode.custom,
-            message: 'A user already exists with this username',
-          })
-          return
-        }
-        const isCommonPassword = await checkIsCommonPassword(data.password)
-        if (isCommonPassword) {
-          ctx.addIssue({
-            path: ['password'],
-            code: 'custom',
-            message: 'Password is too common',
-          })
-        }
-      }).transform(async data => {
-        if (intent !== null) return { ...data, session: null }
+  const submission = parseSubmission(formData)
+  const result = SignupFormSchema.safeParse(submission.payload)
 
-        const session = await signup({ ...data, email })
-        return { ...data, session }
-      }),
-    async: true,
-  })
-
-  if (submission.status !== 'success' || !submission.value.session) {
+  if (!result.success) {
     return data(
-      { result: submission.reply() },
-      { status: submission.status === 'error' ? 400 : 200 }
+      { result: report(submission, { error: result.error }) },
+      { status: 400 }
     )
   }
 
-  const { session, remember, redirectTo } = submission.value
+  const existingUser = await prisma.user.findUnique({
+    where: { username: result.data.username },
+    select: { id: true },
+  })
+  if (existingUser) {
+    return data(
+      {
+        result: report(submission, {
+          error: {
+            fieldErrors: {
+              username: ['A user already exists with this username'],
+            },
+          },
+        }),
+      },
+      { status: 400 }
+    )
+  }
+
+  const isCommonPassword = await checkIsCommonPassword(result.data.password)
+  if (isCommonPassword) {
+    return data(
+      {
+        result: report(submission, {
+          error: {
+            fieldErrors: {
+              password: ['Password is too common'],
+            },
+          },
+        }),
+      },
+      { status: 400 }
+    )
+  }
+
+  const session = await signup({ ...result.data, email })
+  if (!session) {
+    return data(
+      {
+        result: report(submission, {
+          error: {
+            formErrors: ['Something went wrong trying to create your account'],
+          },
+        }),
+      },
+      { status: 400 }
+    )
+  }
+
+  const { remember, redirectTo } = result.data
 
   const authSession = await authSessionStorage.getSession(
     request.headers.get('cookie')
@@ -138,15 +160,10 @@ export default function OnboardingRoute({
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo')
 
-  const [form, fields] = useForm({
+  const { form, fields } = useForm(SignupFormSchema, {
     id: 'onboarding-form',
-    constraint: getZodConstraint(SignupFormSchema),
     defaultValue: { redirectTo },
     lastResult: actionData?.result,
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: SignupFormSchema })
-    },
-    shouldRevalidate: 'onBlur',
   })
 
   return (
@@ -162,75 +179,81 @@ export default function OnboardingRoute({
         <Form
           method="POST"
           className="mx-auto max-w-sm min-w-full sm:min-w-92"
-          {...getFormProps(form)}
+          {...form.props}
         >
           <HoneypotInputs />
-          <Field
-            labelProps={{ htmlFor: fields.username.id, children: 'Username' }}
-            inputProps={{
-              ...getInputProps(fields.username, { type: 'text' }),
-              autoComplete: 'username',
-              className: 'lowercase',
-            }}
+          <FormInput
+            {...fields.username}
+            label="Username"
+            autoComplete="username"
+            id={fields.username.id}
             errors={fields.username.errors}
+            errorId={fields.username.errorId}
+            ariaInvalid={fields.username.ariaInvalid}
           />
-          <Field
-            labelProps={{ htmlFor: fields.name.id, children: 'Name' }}
-            inputProps={{
-              ...getInputProps(fields.name, { type: 'text' }),
-              autoComplete: 'name',
-            }}
+          <FormInput
+            {...fields.name}
+            label="Name"
+            autoComplete="name"
+            id={fields.name.id}
             errors={fields.name.errors}
+            errorId={fields.name.errorId}
+            ariaInvalid={fields.name.ariaInvalid}
           />
-          <Field
-            labelProps={{ htmlFor: fields.password.id, children: 'Password' }}
-            inputProps={{
-              ...getInputProps(fields.password, { type: 'password' }),
-              autoComplete: 'new-password',
-            }}
+          <FormInput
+            {...fields.password}
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            id={fields.password.id}
             errors={fields.password.errors}
+            errorId={fields.password.errorId}
+            ariaInvalid={fields.password.ariaInvalid}
           />
-
-          <Field
-            labelProps={{
-              htmlFor: fields.confirmPassword.id,
-              children: 'Confirm Password',
-            }}
-            inputProps={{
-              ...getInputProps(fields.confirmPassword, { type: 'password' }),
-              autoComplete: 'new-password',
-            }}
+          <FormInput
+            {...fields.confirmPassword}
+            label="Confirm Password"
+            type="password"
+            autoComplete="new-password"
+            id={fields.confirmPassword.id}
             errors={fields.confirmPassword.errors}
+            errorId={fields.confirmPassword.errorId}
+            ariaInvalid={fields.confirmPassword.ariaInvalid}
           />
-
-          <CheckboxField
-            labelProps={{
-              htmlFor: fields.agreeToTermsOfServiceAndPrivacyPolicy.id,
-              children:
-                'Do you agree to our Terms of Service and Privacy Policy?',
-            }}
-            buttonProps={getInputProps(
-              fields.agreeToTermsOfServiceAndPrivacyPolicy,
-              { type: 'checkbox' }
-            )}
+          <FormCheckbox
+            {...fields.agreeToTermsOfServiceAndPrivacyPolicy}
+            id={fields.agreeToTermsOfServiceAndPrivacyPolicy.id}
+            horizontal
+            controlFirst
+            label="I agree to the Terms of Service and Privacy Policy"
             errors={fields.agreeToTermsOfServiceAndPrivacyPolicy.errors}
+            errorId={fields.agreeToTermsOfServiceAndPrivacyPolicy.errorId}
+            ariaInvalid={
+              fields.agreeToTermsOfServiceAndPrivacyPolicy.ariaInvalid
+            }
           />
-          <CheckboxField
-            labelProps={{
-              htmlFor: fields.remember.id,
-              children: 'Remember me',
-            }}
-            buttonProps={getInputProps(fields.remember, { type: 'checkbox' })}
+          <FormCheckbox
+            {...fields.remember}
+            id={fields.remember.id}
+            horizontal
+            controlFirst
+            label="Remember me"
             errors={fields.remember.errors}
+            errorId={fields.remember.errorId}
+            ariaInvalid={fields.remember.ariaInvalid}
+          />
+          <input
+            type="hidden"
+            name={fields.redirectTo.name}
+            value={fields.redirectTo.defaultValue ?? ''}
           />
 
-          <input {...getInputProps(fields.redirectTo, { type: 'hidden' })} />
-          <ErrorList errors={form.errors} id={form.errorId} />
+          <FormErrors errors={form.errors} id={form.errorId} />
 
           <div className="flex items-center justify-between gap-6">
             <StatusButton
               className="w-full"
-              status={isPending ? 'pending' : (form.status ?? 'idle')}
+              status={isPending ? 'pending' : 'idle'}
               type="submit"
               disabled={isPending}
             >

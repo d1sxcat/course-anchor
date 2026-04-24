@@ -1,11 +1,15 @@
 import { data, Link, useFetcher } from 'react-router'
-import { getFormProps, getInputProps, useForm } from '@conform-to/react'
-import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
+import {
+  parseSubmission,
+  report,
+  type Submission,
+} from '@conform-to/react/future'
+import { coerceFormValue } from '@conform-to/zod/v4/future'
 import { invariantResponse } from '@epic-web/invariant'
 import { Camera } from 'lucide-react'
 import { Img } from 'openimg/react'
 import { z } from 'zod'
-import { ErrorList, Field } from '~/components/forms'
+import { FormErrors, useForm, FormInput } from '~/components/form'
 import { LinkButton } from '~/components/ui/link'
 import { StatusButton } from '~/components/ui/status-button'
 import { requireUserId, sessionKey } from '~/lib/auth.server'
@@ -17,10 +21,12 @@ import { NameSchema, UsernameSchema } from '~/lib/user-validation'
 import { type Route } from './+types/index'
 import { twoFAVerificationType } from './two-factor/_layout'
 
-const ProfileFormSchema = z.object({
-  name: NameSchema.nullable().default(null),
-  username: UsernameSchema,
-})
+const ProfileFormSchema = coerceFormValue(
+  z.object({
+    name: NameSchema.nullable().default(null),
+    username: UsernameSchema
+  })
+)
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request)
@@ -66,7 +72,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 type ProfileActionArgs = {
   request: Request
   userId: string
-  formData: FormData
+  submission: Submission
 }
 const profileUpdateActionIntent = 'update-profile'
 const signOutOfSessionsActionIntent = 'sign-out-of-sessions'
@@ -75,16 +81,17 @@ const deleteDataActionIntent = 'delete-data'
 export async function action({ request }: Route.ActionArgs) {
   const userId = await requireUserId(request)
   const formData = await request.formData()
+  const submission = parseSubmission(formData)
   const intent = formData.get('intent')
   switch (intent) {
     case profileUpdateActionIntent: {
-      return profileUpdateAction({ request, userId, formData })
+      return profileUpdateAction({ request, userId, submission })
     }
     case signOutOfSessionsActionIntent: {
-      return signOutOfSessionsAction({ request, userId, formData })
+      return signOutOfSessionsAction({ request, userId, submission })
     }
     case deleteDataActionIntent: {
-      return deleteDataAction({ request, userId, formData })
+      return deleteDataAction({ request, userId, submission })
     }
     default: {
       throw new Response(`Invalid intent "${intent}"`, { status: 400 })
@@ -172,31 +179,33 @@ export default function EditUserProfile({ loaderData }: Route.ComponentProps) {
   )
 }
 
-async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
-  const submission = await parseWithZod(formData, {
-    async: true,
-    schema: ProfileFormSchema.superRefine(async ({ username }, ctx) => {
-      const existingUsername = await prisma.user.findUnique({
-        where: { username },
-        select: { id: true },
-      })
-      if (existingUsername && existingUsername.id !== userId) {
-        ctx.addIssue({
-          path: ['username'],
-          code: z.ZodIssueCode.custom,
-          message: 'A user already exists with this username',
-        })
-      }
-    }),
-  })
-  if (submission.status !== 'success') {
+async function profileUpdateAction({ userId, submission }: ProfileActionArgs) {
+  const result = ProfileFormSchema.safeParse(submission.payload)
+  if (!result.success) {
     return data(
-      { result: submission.reply() },
-      { status: submission.status === 'error' ? 400 : 200 }
+      { result: report(submission, { error: result.error }) },
+      { status: 400 }
     )
   }
-
-  const { username, name } = submission.value
+  const existingUsername = await prisma.user.findUnique({
+    where: { username: result.data.username },
+    select: { id: true },
+  })
+  if (existingUsername && existingUsername.id !== userId) {
+    return data(
+      {
+        result: report(submission, {
+          error: {
+            fieldErrors: {
+              username: ['A user already exists with this username'],
+            },
+          },
+        }),
+      },
+      { status: 400 }
+    )
+  }
+  const { username, name } = result.data
 
   await prisma.user.update({
     select: { username: true },
@@ -207,9 +216,12 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
     },
   })
 
-  return {
-    result: submission.reply(),
-  }
+  return data(
+    {
+      result: report(submission),
+    },
+    { status: 200 }
+  )
 }
 
 function UpdateProfile({
@@ -219,13 +231,9 @@ function UpdateProfile({
 }) {
   const fetcher = useFetcher<typeof profileUpdateAction>()
 
-  const [form, fields] = useForm({
+  const {form, fields} = useForm(ProfileFormSchema,{
     id: 'edit-profile',
-    constraint: getZodConstraint(ProfileFormSchema),
     lastResult: fetcher.data?.result,
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: ProfileFormSchema })
-    },
     defaultValue: {
       username: loaderData.user.username,
       name: loaderData.user.name,
@@ -233,35 +241,38 @@ function UpdateProfile({
   })
 
   return (
-    <fetcher.Form method="POST" {...getFormProps(form)}>
-      <div className="grid grid-cols-6 gap-x-10">
-        <Field
-          className="col-span-3"
-          labelProps={{
-            htmlFor: fields.username.id,
-            children: 'Username',
-          }}
-          inputProps={getInputProps(fields.username, { type: 'text' })}
-          errors={fields.username.errors}
-        />
-        <Field
-          className="col-span-3"
-          labelProps={{ htmlFor: fields.name.id, children: 'Name' }}
-          inputProps={getInputProps(fields.name, { type: 'text' })}
-          errors={fields.name.errors}
-        />
+    <fetcher.Form {...form.props} method="POST">
+      <div className="grid grid-cols-2 gap-x-10">
+				<FormInput
+					{...fields.username}
+					label={'Username'}
+					errors={fields.username.errors}
+					id={fields.username.id}
+					errorId={fields.username.errorId}
+					ariaInvalid={fields.username.ariaInvalid}
+					key={`${fields.username.defaultValue}-${fields.username.id}`} // need to remount this input if the default value changes to reset the async validation state
+				/>
+				<FormInput
+					{...fields.name}
+					label={'Name'}
+					errors={fields.name.errors}
+					id={fields.name.id}
+					errorId={fields.name.errorId}
+					ariaInvalid={fields.name.ariaInvalid}
+					key={`${fields.name.defaultValue}-${fields.name.id}`} // need to remount this input if the default value changes to reset the async validation state
+				/>
       </div>
 
-      <ErrorList errors={form.errors} id={form.errorId} />
+      <FormErrors errors={form.errors} id={form.errorId} />
 
       <div className="mt-8 flex justify-center">
         <StatusButton
           type="submit"
           // size="wide"
-          name="intent"
+          name={'intent'}
           value={profileUpdateActionIntent}
           status={
-            fetcher.state !== 'idle' ? 'pending' : (form.status ?? 'idle')
+            fetcher.state !== 'idle' ? 'pending' : 'idle'
           }
         >
           Save changes

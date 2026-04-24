@@ -4,8 +4,7 @@ import { cn } from '@course-anchor/ui/lib/utils'
 import { Img } from 'openimg/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '~/components/error-boundary'
-import { FormInput, FormTextarea, useForm } from '~/components/form'
-import { ErrorList } from '~/components/forms'
+import { FormInput, FormTextarea, useForm, FormErrors } from '~/components/form'
 import { prisma, searchUsers } from '~/lib/db.server.ts'
 //import { SearchBar } from '~/components/search-bar.tsx'
 import { getUserImgSrc, useDelayedIsPending } from '~/lib/misc'
@@ -94,7 +93,7 @@ export default function UsersRoute({ loaderData }: Route.ComponentProps) {
             <p>No users found</p>
           )
         ) : loaderData.status === 'error' ? (
-          <ErrorList errors={['There was an error parsing the results']} />
+          <FormErrors id={'kwdijdw789vuwvh'} errors={['There was an error parsing the results']} />
         ) : null}
       </main>
     </div>

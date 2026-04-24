@@ -4,13 +4,13 @@ import { verifySessionStorage } from '~/lib/verification.server'
 import { type VerifyFunctionArgs } from '../verify.server'
 import { onboardingEmailSessionKey } from './index'
 
-export async function handleVerification({ submission }: VerifyFunctionArgs) {
+export async function handleVerification({ submission, result }: VerifyFunctionArgs) {
 	invariant(
-		submission.status === 'success',
+		result.success,
 		'Submission should be successful by now',
 	)
 	const verifySession = await verifySessionStorage.getSession()
-	verifySession.set(onboardingEmailSessionKey, submission.value.target)
+	verifySession.set(onboardingEmailSessionKey, result.data.target)
 	return redirect('/onboarding', {
 		headers: {
 			'set-cookie': await verifySessionStorage.commitSession(verifySession),

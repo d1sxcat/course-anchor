@@ -82,19 +82,19 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 	if (existingConnection && userId) {
 		if (existingConnection.userId === userId) {
 			return redirectWithToast(
-				'/settings/profile/connections',
+				'/settings/connections',
 				{
 					title: 'Already Connected',
-					description: `Your "${profile.username}" ${label} account is already connected.`,
+					description: `Your "${profile.username ?? profile.email}" ${label} account is already connected.`,
 				},
 				{ headers: destroyRedirectTo },
 			)
 		} else {
 			return redirectWithToast(
-				'/settings/profile/connections',
+				'/settings/connections',
 				{
 					title: 'Already Connected',
-					description: `The "${profile.username}" ${label} account is already connected to another account.`,
+					description: `The "${profile.username ?? profile.email}" ${label} account is already connected to another account.`,
 				},
 				{ headers: destroyRedirectTo },
 			)
@@ -111,11 +111,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 			},
 		})
 		return redirectWithToast(
-			'/settings/profile/connections',
+			'/settings/connections',
 			{
 				title: 'Connected',
 				type: 'success',
-				description: `Your "${profile.username}" ${label} account has been connected.`,
+				description: `Your "${profile.username ?? profile.email}" ${label} account has been connected.`,
 			},
 			{ headers: destroyRedirectTo },
 		)

@@ -1,20 +1,25 @@
-import { invariantResponse } from '@epic-web/invariant'
-import { Img } from 'openimg/react'
 import {
-  type LoaderFunctionArgs,
   Form,
   Link,
   useLoaderData,
+  type LoaderFunctionArgs,
 } from 'react-router'
-import { GeneralErrorBoundary } from '~/components/error-boundary'
-import { Spacer } from '~/components/ui/spacer'
 import { Button } from '@course-anchor/ui/components/button'
+import { invariantResponse } from '@epic-web/invariant'
+import { Img } from 'openimg/react'
+import { type SidebarHandle } from '~/components/app-sidebar'
+import { GeneralErrorBoundary } from '~/components/error-boundary'
 import { LinkButton } from '~/components/ui/link'
+import { Spacer } from '~/components/ui/spacer'
 //import { Icon } from '#app/components/ui/icon.tsx'
 import { prisma } from '~/lib/db.server'
 import { getUserImgSrc } from '~/lib/misc'
 import { useOptionalUser } from '~/lib/user'
 import { type Route } from './+types/index'
+
+export const handle: SidebarHandle = {
+  sidebar: 'users',
+}
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const user = await prisma.user.findFirst({
@@ -86,7 +91,7 @@ export default function ProfileRoute() {
                   My notes
                 </LinkButton>
 
-                <LinkButton to="/settings/profile" prefetch="intent">
+                <LinkButton to="/settings" prefetch="intent">
                   Edit profile
                 </LinkButton>
               </>

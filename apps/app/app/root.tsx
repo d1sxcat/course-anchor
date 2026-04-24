@@ -17,12 +17,6 @@ import appleTouchIconAssetUrl from '~/assets/favicons/apple-touch-icon.png'
 import faviconAssetUrl from '~/assets/favicons/favicon.svg'
 import { GeneralErrorBoundary } from '~/components/error-boundary'
 import { useToast } from '~/hooks/use-toast'
-// import {
-//   SidebarProvider,
-//   SidebarTrigger,
-// } from '@course-anchor/ui/components/sidebar'
-// import { TooltipProvider } from '@course-anchor/ui/components/tooltip'
-// import { AppSidebar } from '~/components/app-sidebar'
 import { getUserId, logout } from '~/lib/auth.server'
 import { ClientHintCheck, getHints } from '~/lib/client-hints'
 import { prisma } from '~/lib/db.server'

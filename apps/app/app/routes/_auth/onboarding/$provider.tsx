@@ -1,26 +1,25 @@
 import {
-  getFormProps,
-  getInputProps,
-  useForm,
-  type SubmissionResult,
-} from '@conform-to/react'
-import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
-import {
-  redirect,
   data,
-  type Params,
   Form,
+  redirect,
   useSearchParams,
+  type Params,
 } from 'react-router'
+import {
+  parseSubmission,
+  report,
+  type SubmissionResult,
+} from '@conform-to/react/future'
+import { coerceFormValue } from '@conform-to/zod/v4/future'
 import { safeRedirect } from 'remix-utils/safe-redirect'
 import { z } from 'zod'
-import { CheckboxField, ErrorList, Field } from '~/components/forms'
+import { FormCheckbox, FormErrors, FormInput, useForm } from '~/components/form'
 import { Spacer } from '~/components/ui/spacer'
 import { StatusButton } from '~/components/ui/status-button'
 import {
+  requireAnonymous,
   sessionKey,
   signupWithConnection,
-  requireAnonymous,
 } from '~/lib/auth.server'
 import { ProviderNameSchema } from '~/lib/connections'
 import { prisma } from '~/lib/db.server'
@@ -35,16 +34,18 @@ import { onboardingEmailSessionKey } from './index'
 export const providerIdKey = 'providerId'
 export const prefilledProfileKey = 'prefilledProfile'
 
-const SignupFormSchema = z.object({
-  imageUrl: z.string().optional(),
-  username: UsernameSchema,
-  name: NameSchema,
-  agreeToTermsOfServiceAndPrivacyPolicy: z.boolean(
-    'You must agree to the terms of service and privacy policy'
-  ),
-  remember: z.boolean().optional(),
-  redirectTo: z.string().optional(),
-})
+const SignupFormSchema = coerceFormValue(
+  z.object({
+    imageUrl: z.string().optional(),
+    username: UsernameSchema,
+    name: NameSchema,
+    agreeToTermsOfServiceAndPrivacyPolicy: z.boolean(
+      'You must agree to the terms of service and privacy policy'
+    ),
+    remember: z.boolean().optional(),
+    redirectTo: z.string().optional(),
+  })
+)
 
 async function requireData({
   request,
@@ -80,14 +81,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const verifySession = await verifySessionStorage.getSession(
     request.headers.get('cookie')
   )
-  const prefilledProfile = verifySession.get(prefilledProfileKey)
+  const prefilledProfile = verifySession.get(prefilledProfileKey) ?? {}
 
   return {
     email,
     status: 'idle',
-    submission: {
-      initialValue: prefilledProfile ?? {},
-    } as SubmissionResult,
+    defaultValues: prefilledProfile,
   }
 }
 
@@ -96,46 +95,47 @@ export async function action({ request, params }: Route.ActionArgs) {
     request,
     params,
   })
-  console.log({ email, providerId, providerName })
   const formData = await request.formData()
   const verifySession = await verifySessionStorage.getSession(
     request.headers.get('cookie')
   )
-
-  const submission = await parseWithZod(formData, {
-    schema: SignupFormSchema.superRefine(async (data, ctx) => {
-      const existingUser = await prisma.user.findUnique({
-        where: { username: data.username },
-        select: { id: true },
-      })
-      if (existingUser) {
-        ctx.addIssue({
-          path: ['username'],
-          code: 'custom',
-          message: 'A user already exists with this username',
-        })
-        return
-      }
-    }).transform(async data => {
-      const session = await signupWithConnection({
-        ...data,
-        email,
-        providerId: String(providerId),
-        providerName,
-      })
-      return { ...data, session }
-    }),
-    async: true,
-  })
-
-  if (submission.status !== 'success') {
+  const submission = parseSubmission(formData)
+  const result = SignupFormSchema.safeParse(submission.payload)
+  if (!result.success) {
     return data(
-      { result: submission.reply() },
-      { status: submission.status === 'error' ? 400 : 200 }
+      { result: report(submission, { error: result.error }) },
+      { status: 400 }
     )
   }
 
-  const { session, remember, redirectTo } = submission.value
+  const { username } = result.data
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  })
+  if (existingUser) {
+    return data(
+      {
+        result: report(submission, {
+          error: {
+            fieldErrors: {
+              username: ['A user already exists with this username'],
+            },
+          },
+        }),
+      },
+      { status: 400 }
+    )
+  }
+
+  const session = await signupWithConnection({
+    ...result.data,
+    email,
+    providerId: String(providerId),
+    providerName,
+  })
+
+  const { remember, redirectTo } = result.data
 
   const authSession = await authSessionStorage.getSession(
     request.headers.get('cookie')
@@ -172,14 +172,10 @@ export default function OnboardingProviderRoute({
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo')
 
-  const [form, fields] = useForm({
+  const { form, fields } = useForm(SignupFormSchema, {
     id: 'onboarding-provider-form',
-    constraint: getZodConstraint(SignupFormSchema),
-    lastResult: actionData?.result ?? loaderData.submission,
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: SignupFormSchema })
-    },
-    shouldRevalidate: 'onBlur',
+    lastResult: actionData?.result,
+    defaultValue: loaderData.defaultValues,
   })
 
   return (
@@ -195,70 +191,73 @@ export default function OnboardingProviderRoute({
         <Form
           method="POST"
           className="mx-auto max-w-sm min-w-full sm:min-w-92"
-          {...getFormProps(form)}
+          {...form.props}
         >
-          {fields.imageUrl.initialValue ? (
+          {fields.imageUrl.defaultValue ? (
             <div className="mb-4 flex flex-col items-center justify-center gap-4">
               <img
-                src={fields.imageUrl.initialValue}
+                src={fields.imageUrl.defaultValue}
                 alt="Profile"
                 className="size-24 rounded-full"
               />
               <p className="text-body-sm text-muted-foreground">
                 You can change your photo later
               </p>
-              <input {...getInputProps(fields.imageUrl, { type: 'hidden' })} />
+              <input
+                type="hidden"
+                name="imageUrl"
+                defaultValue={fields.imageUrl.defaultValue}
+              />
             </div>
           ) : null}
-          <Field
-            labelProps={{ htmlFor: fields.username.id, children: 'Username' }}
-            inputProps={{
-              ...getInputProps(fields.username, { type: 'text' }),
-              autoComplete: 'username',
-              className: 'lowercase',
-            }}
+          <FormInput
+            {...fields.username}
+            label={'Username'}
+            autoComplete="username"
+            errorId={fields.username.errorId}
+            ariaInvalid={fields.username.ariaInvalid}
+            id={fields.username.id}
             errors={fields.username.errors}
           />
-          <Field
-            labelProps={{ htmlFor: fields.name.id, children: 'Name' }}
-            inputProps={{
-              ...getInputProps(fields.name, { type: 'text' }),
-              autoComplete: 'name',
-            }}
+          <FormInput
+            {...fields.name}
+            label={'Name'}
+            autoComplete="name"
+            errorId={fields.name.errorId}
+            ariaInvalid={fields.name.ariaInvalid}
+            id={fields.name.id}
             errors={fields.name.errors}
           />
-
-          <CheckboxField
-            labelProps={{
-              htmlFor: fields.agreeToTermsOfServiceAndPrivacyPolicy.id,
-              children:
-                'Do you agree to our Terms of Service and Privacy Policy?',
-            }}
-            buttonProps={getInputProps(
-              fields.agreeToTermsOfServiceAndPrivacyPolicy,
-              { type: 'checkbox' }
-            )}
+          <FormCheckbox
+            {...fields.agreeToTermsOfServiceAndPrivacyPolicy}
+            label={'Do you agree to our Terms of Service and Privacy Policy?'}
+            horizontal
+            controlFirst
+            id={fields.agreeToTermsOfServiceAndPrivacyPolicy.id}
+            aria-invalid={
+              fields.agreeToTermsOfServiceAndPrivacyPolicy.ariaInvalid
+            }
+            errorId={fields.agreeToTermsOfServiceAndPrivacyPolicy.errorId}
             errors={fields.agreeToTermsOfServiceAndPrivacyPolicy.errors}
           />
-          <CheckboxField
-            labelProps={{
-              htmlFor: fields.remember.id,
-              children: 'Remember me',
-            }}
-            buttonProps={getInputProps(fields.remember, { type: 'checkbox' })}
+          <FormCheckbox
+            {...fields.remember}
+            label={'Remember me'}
+            horizontal
+            controlFirst
+            id={fields.remember.id}
+            aria-invalid={fields.remember.ariaInvalid}
+            errorId={fields.remember.errorId}
             errors={fields.remember.errors}
           />
-
           {redirectTo ? (
             <input type="hidden" name="redirectTo" value={redirectTo} />
           ) : null}
-
-          <ErrorList errors={form.errors} id={form.errorId} />
-
+          <FormErrors errors={form.errors} id={form.errorId} />
           <div className="flex items-center justify-between gap-6">
             <StatusButton
               className="w-full"
-              status={isPending ? 'pending' : (form.status ?? 'idle')}
+              status={isPending ? 'pending' : 'idle'}
               type="submit"
               disabled={isPending}
             >

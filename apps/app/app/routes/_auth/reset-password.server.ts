@@ -1,16 +1,17 @@
 import { invariant } from '@epic-web/invariant'
+import { report } from '@conform-to/react/future'
 import { data, redirect } from 'react-router'
 import { prisma } from '~/lib/db.server'
 import { verifySessionStorage } from '~/lib/verification.server'
 import { resetPasswordUsernameSessionKey } from './reset-password'
 import { type VerifyFunctionArgs } from './verify.server'
 
-export async function handleVerification({ submission }: VerifyFunctionArgs) {
+export async function handleVerification({ submission, result }: VerifyFunctionArgs) {
 	invariant(
-		submission.status === 'success',
+		result.success,
 		'Submission should be successful by now',
 	)
-	const target = submission.value.target
+	const target = result.data.target
 	const user = await prisma.user.findFirst({
 		where: { OR: [{ email: target }, { username: target }] },
 		select: { email: true, username: true },
@@ -19,7 +20,11 @@ export async function handleVerification({ submission }: VerifyFunctionArgs) {
 	// because that would allow an attacker to check if an email is registered
 	if (!user) {
 		return data(
-			{ result: submission.reply({ fieldErrors: { code: ['Invalid code'] } }) },
+			{
+				result: report(submission, {
+					error: { fieldErrors: { code: ['Invalid code'] } },
+				}),
+			},
 			{ status: 400 },
 		)
 	}

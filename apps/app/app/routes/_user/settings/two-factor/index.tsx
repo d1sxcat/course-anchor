@@ -32,7 +32,7 @@ export async function action({ request }: Route.ActionArgs) {
 		create: verificationData,
 		update: verificationData,
 	})
-	return redirect('/settings/profile/two-factor/verify')
+	return redirect('/settings/two-factor/verify')
 }
 
 export default function TwoFactorRoute({ loaderData }: Route.ComponentProps) {

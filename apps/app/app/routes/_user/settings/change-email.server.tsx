@@ -1,4 +1,5 @@
 import { invariant } from '@epic-web/invariant'
+import { report } from '@conform-to/react/future'
 import * as E from '@react-email/components'
 import { data } from 'react-router'
 import {
@@ -14,10 +15,11 @@ import { newEmailAddressSessionKey } from './change-email'
 export async function handleVerification({
 	request,
 	submission,
+	result,
 }: VerifyFunctionArgs) {
 	await requireRecentVerification(request)
 	invariant(
-		submission.status === 'success',
+		result.success,
 		'Submission should be successful by now',
 	)
 
@@ -28,10 +30,12 @@ export async function handleVerification({
 	if (!newEmail) {
 		return data(
 			{
-				result: submission.reply({
-					formErrors: [
-						'You must submit the code on the same device that requested the email change.',
-					],
+				result: report(submission, {
+					error: {
+						formErrors: [
+							'You must submit the code on the same device that requested the email change.',
+						],
+					},
 				}),
 			},
 			{ status: 400 },
@@ -39,10 +43,10 @@ export async function handleVerification({
 	}
 	const preUpdateUser = await prisma.user.findFirstOrThrow({
 		select: { email: true },
-		where: { id: submission.value.target },
+		where: { id: result.data.target },
 	})
 	const user = await prisma.user.update({
-		where: { id: submission.value.target },
+		where: { id: result.data.target },
 		select: { id: true, email: true, username: true },
 		data: { email: newEmail },
 	})
@@ -54,7 +58,7 @@ export async function handleVerification({
 	})
 
 	return redirectWithToast(
-		'/settings/profile',
+		'/settings',
 		{
 			title: 'Email Changed',
 			type: 'success',

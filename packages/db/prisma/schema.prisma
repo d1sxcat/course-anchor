@@ -93,11 +93,29 @@ model Session {
   @@index([userId])
 }
 
+enum Action {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
+enum Entity {
+  NOTE
+  USER
+  // add more as needed
+}
+
+enum Access {
+  OWN
+  ANY
+}
+
 model Permission {
   id          String @id @default(cuid())
-  action      String // e.g. create, read, update, delete
-  entity      String // e.g. note, user, etc.
-  access      String // e.g. own or any
+  action      Action // e.g. create, read, update, delete
+  entity      Entity // e.g. note, user, etc.
+  access      Access // e.g. own or any
   description String @default("")
 
   createdAt DateTime @default(now())
