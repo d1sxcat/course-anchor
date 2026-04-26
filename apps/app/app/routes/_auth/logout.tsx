@@ -3,7 +3,7 @@ import { logout } from '~/lib/auth.server'
 import { type Route } from './+types/logout'
 
 export async function loader() {
-	return redirect('/')
+	return redirect('/login')
 }
 
 export async function action({ request }: Route.ActionArgs) {

@@ -116,15 +116,15 @@ export default function TwoFactorRoute({
   actionData,
 }: Route.ComponentProps) {
   const navigation = useNavigation()
-
   const isPending = useIsPending()
   const pendingIntent = isPending ? navigation.formData?.get('intent') : null
 
   const { form, fields } = useForm(ActionSchema, {
     id: 'verify-form',
     lastResult: actionData?.result,
+    shouldValidate: 'onSubmit',
+    shouldRevalidate: 'onBlur',
   })
-  // const lastSubmissionIntent = fields.intent.value
 
   return (
     <div>
@@ -154,11 +154,7 @@ export default function TwoFactorRoute({
           <Form method="POST" {...form.props} className="flex-1">
             <div className="flex items-center justify-center">
               <FormOTP
-                {...fields.code}
-                errorId={fields.code.errorId}
-                errors={fields.code.errors}
-                aria-invalid={fields.code.ariaInvalid}
-                id={fields.code.id}
+                {...fields.code.otpProps}
               />
             </div>
 

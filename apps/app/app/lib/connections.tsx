@@ -1,6 +1,6 @@
 import { Form } from 'react-router'
-import { z } from 'zod'
 import { Button } from '@course-anchor/ui/components/button'
+import { z } from 'zod'
 
 export const GITHUB_PROVIDER_NAME = 'github'
 export const GOOGLE_PROVIDER_NAME = 'google'
@@ -26,6 +26,7 @@ export const providerIcons: Record<ProviderName, React.ReactNode> = {
       height="15"
       viewBox="0 0 15 15"
       fill="none"
+      data-icon="inline-start"
     >
       <path
         fillRule="evenodd"
@@ -42,6 +43,7 @@ export const providerIcons: Record<ProviderName, React.ReactNode> = {
       viewBox="0 0 48 48"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       style={{ display: 'block' }}
+      data-icon="inline-start"
     >
       <path
         fill="#EA4335"
@@ -86,14 +88,12 @@ export function ProviderConnectionForm({
       ) : null}
       <Button
         type="submit"
-        className="w-full"
+        variant={'outline'}
+        className="w-full gap-2.5"
+        size="lg"
       >
-        <span className="inline-flex items-center gap-1.5">
-          {providerIcons[providerName]}
-          <span>
-            {type} with {label}
-          </span>
-        </span>
+        {providerIcons[providerName]}
+        {type} with {label}
       </Button>
     </Form>
   )

@@ -277,3 +277,11 @@ export async function downloadFile(url: string, retries: number = 0) {
 		return downloadFile(url, retries + 1)
 	}
 }
+
+export function getInitials(name: string) {
+	const [first, ...rest] = name.trim().split(' ')
+	if (!first) return 'CA'
+	if (rest.length === 0) return first[0]
+	const last = rest.pop()!
+	return `${first[0]}${last[0]}`
+}

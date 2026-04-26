@@ -146,34 +146,22 @@ export default function ChangePasswordRoute({
   return (
     <Form method="POST" {...form.props} className="mx-auto max-w-md">
       <FormInput
-        {...fields.currentPassword}
+        {...fields.currentPassword.inputProps}
         type="password"
         autoComplete="current-password"
         label="Current Password"
-        id={fields.currentPassword.id}
-        errorId={fields.currentPassword.errorId}
-        errors={fields.currentPassword.errors}
-        ariaInvalid={fields.currentPassword.ariaInvalid}
       />
       <FormInput
-        {...fields.newPassword}
+        {...fields.newPassword.inputProps}
         type="password"
         autoComplete="new-password"
         label="New Password"
-        id={fields.newPassword.id}
-        errorId={fields.newPassword.errorId}
-        errors={fields.newPassword.errors}
-        ariaInvalid={fields.newPassword.ariaInvalid}
       />
       <FormInput
-        {...fields.confirmNewPassword}
+        {...fields.confirmNewPassword.inputProps}
         type="password"
         autoComplete="new-password"
         label="Confirm New Password"
-        id={fields.confirmNewPassword.id}
-        errorId={fields.confirmNewPassword.errorId}
-        errors={fields.confirmNewPassword.errors}
-        ariaInvalid={fields.confirmNewPassword.ariaInvalid}
       />
       <FormErrors id={form.errorId} errors={form.errors} />
       <div className="grid w-full grid-cols-2 gap-6">

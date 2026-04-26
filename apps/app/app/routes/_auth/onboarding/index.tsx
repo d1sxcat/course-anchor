@@ -162,7 +162,11 @@ export default function OnboardingRoute({
 
   const { form, fields } = useForm(SignupFormSchema, {
     id: 'onboarding-form',
-    defaultValue: { redirectTo },
+    defaultValue: {
+      redirectTo,
+      agreeToTermsOfServiceAndPrivacyPolicy: false,
+      remember: false,
+    },
     lastResult: actionData?.result,
   })
 
@@ -183,64 +187,38 @@ export default function OnboardingRoute({
         >
           <HoneypotInputs />
           <FormInput
-            {...fields.username}
+            {...fields.username.inputProps}
             label="Username"
             autoComplete="username"
-            id={fields.username.id}
-            errors={fields.username.errors}
-            errorId={fields.username.errorId}
-            ariaInvalid={fields.username.ariaInvalid}
           />
           <FormInput
-            {...fields.name}
+            {...fields.name.inputProps}
             label="Name"
             autoComplete="name"
-            id={fields.name.id}
-            errors={fields.name.errors}
-            errorId={fields.name.errorId}
-            ariaInvalid={fields.name.ariaInvalid}
           />
           <FormInput
-            {...fields.password}
+            {...fields.password.inputProps}
             label="Password"
             type="password"
             autoComplete="new-password"
-            id={fields.password.id}
-            errors={fields.password.errors}
-            errorId={fields.password.errorId}
-            ariaInvalid={fields.password.ariaInvalid}
           />
           <FormInput
-            {...fields.confirmPassword}
+            {...fields.confirmPassword.inputProps}
             label="Confirm Password"
             type="password"
             autoComplete="new-password"
-            id={fields.confirmPassword.id}
-            errors={fields.confirmPassword.errors}
-            errorId={fields.confirmPassword.errorId}
-            ariaInvalid={fields.confirmPassword.ariaInvalid}
           />
           <FormCheckbox
-            {...fields.agreeToTermsOfServiceAndPrivacyPolicy}
-            id={fields.agreeToTermsOfServiceAndPrivacyPolicy.id}
+            {...fields.agreeToTermsOfServiceAndPrivacyPolicy.checkboxProps}
             horizontal
             controlFirst
             label="I agree to the Terms of Service and Privacy Policy"
-            errors={fields.agreeToTermsOfServiceAndPrivacyPolicy.errors}
-            errorId={fields.agreeToTermsOfServiceAndPrivacyPolicy.errorId}
-            ariaInvalid={
-              fields.agreeToTermsOfServiceAndPrivacyPolicy.ariaInvalid
-            }
           />
           <FormCheckbox
-            {...fields.remember}
-            id={fields.remember.id}
+            {...fields.remember.checkboxProps}
             horizontal
             controlFirst
             label="Remember me"
-            errors={fields.remember.errors}
-            errorId={fields.remember.errorId}
-            ariaInvalid={fields.remember.ariaInvalid}
           />
           <input
             type="hidden"

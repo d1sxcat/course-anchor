@@ -136,6 +136,8 @@ export default function ChangeEmailIndex({
   const { form, fields } = useForm(ChangeEmailSchema, {
     id: 'change-email-form',
     lastResult: actionData?.result,
+    shouldValidate: 'onSubmit',
+    shouldRevalidate: 'onBlur',
   })
 
   const isPending = useIsPending()
@@ -150,13 +152,9 @@ export default function ChangeEmailIndex({
       <div className="mx-auto mt-5 max-w-sm">
         <Form method="POST" {...form.props}>
           <FormInput
-            {...fields.email}
+            {...fields.email.inputProps}
             type="email"
             label="New Email"
-            errorId={fields.email.errorId}
-            ariaInvalid={fields.email.ariaInvalid}
-            autoComplete="email"
-            errors={fields.email.errors}
           />
           <FormErrors id={form.errorId} errors={form.errors} />
           <div>

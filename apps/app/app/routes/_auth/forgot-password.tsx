@@ -2,10 +2,12 @@ import { data, Link, redirect, useFetcher } from 'react-router'
 import { parseSubmission, report } from '@conform-to/react/future'
 import { coerceFormValue } from '@conform-to/zod/v4/future'
 import * as E from '@react-email/components'
+import { ArrowLeft, LockOpen } from 'lucide-react'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '~/components/error-boundary'
 import { FormErrors, FormInput, useForm } from '~/components/form'
+import { LinkButton } from '~/components/ui/link'
 import { StatusButton } from '~/components/ui/status-button'
 import { prisma } from '~/lib/db.server'
 import { sendEmail } from '~/lib/email.server'
@@ -118,52 +120,70 @@ export default function ForgotPasswordRoute() {
 
   const { form, fields } = useForm(ForgotPasswordSchema, {
     id: 'forgot-password-form',
-    lastResult: forgotPassword.data?.result
+    lastResult: forgotPassword.data?.result,
+		shouldRevalidate: 'onBlur',
+		shouldValidate: 'onSubmit',
   })
 
   return (
-    <div className="container pt-20 pb-32">
-      <div className="flex flex-col justify-center">
-        <div className="text-center">
-          <h1 className="text-h1">Forgot Password</h1>
-          <p className="text-body-md text-muted-foreground mt-3">
-            No worries, we'll send you reset instructions.
-          </p>
-        </div>
-        <div className="mx-auto mt-16 max-w-sm min-w-full sm:min-w-92">
-          <forgotPassword.Form method="POST" {...form.props}>
+    <div className="mx-auto w-full max-w-sm lg:w-96">
+      <div>
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          className="h-10 w-auto dark:hidden"
+        />
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+          className="h-10 w-auto not-dark:hidden"
+        />
+        <h2 className="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
+          Forgot Password
+        </h2>
+        <p className="mt-2 text-sm/6 text-gray-500 dark:text-gray-400">
+          No worries, we'll send you reset instructions.
+        </p>
+      </div>
+      <div className="mt-10">
+        <div>
+          <forgotPassword.Form
+            method="POST"
+            {...form.props}
+            className="space-y-6"
+          >
             <HoneypotInputs />
-            <div>
-              <FormInput
-                {...fields.usernameOrEmail}
-                label="Username or Email"
-                errorId={fields.usernameOrEmail.errorId}
-                errors={fields.usernameOrEmail.errors}
-                ariaInvalid={fields.usernameOrEmail.ariaInvalid}
-                id={fields.usernameOrEmail.id}
-              />
-            </div>
+            <FormInput
+              {...fields.usernameOrEmail.inputProps}
+              label="Username or Email"
+              autoComplete="username email"
+              autoFocus
+            />
             <FormErrors errors={form.errors} id={form.errorId} />
 
-            <div className="mt-6">
+            <div>
               <StatusButton
-                className="w-full"
+                className="w-full font-semibold"
+                size="lg"
                 status={
                   forgotPassword.state === 'submitting' ? 'pending' : 'idle'
                 }
                 type="submit"
                 disabled={forgotPassword.state !== 'idle'}
+                icon={<LockOpen />}
               >
                 Recover password
               </StatusButton>
             </div>
+            <LinkButton
+              to="/login"
+              variant={'link'}
+              className="font-semibold"
+            >
+              <ArrowLeft />
+              Back to Login
+            </LinkButton>
           </forgotPassword.Form>
-          <Link
-            to="/login"
-            className="text-body-sm mt-11 text-center font-bold"
-          >
-            Back to Login
-          </Link>
         </div>
       </div>
     </div>

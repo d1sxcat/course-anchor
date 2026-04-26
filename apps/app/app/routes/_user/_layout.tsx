@@ -15,16 +15,10 @@ import {
   SidebarTrigger,
 } from '@course-anchor/ui/components/sidebar'
 import { TooltipProvider } from '@course-anchor/ui/components/tooltip'
-import { AppSidebar, type SidebarHandle } from '~/components/app-sidebar'
-import { useBreadcrumbs, type BreadcrumbHandle } from '~/hooks/use-breadcrumbs'
+import { AppSidebar } from '~/components/app-sidebar'
+import { useBreadcrumbs } from '~/hooks/use-breadcrumbs'
 import { requireUserId } from '~/lib/auth.server'
 import { type Route } from './+types/_layout'
-
-export const handle: BreadcrumbHandle & SidebarHandle = {
-  //breadcrumb: <Icon name="file-text">Edit Profile</Icon>
-  breadcrumb: 'Edit Profile',
-  sidebar: 'users',
-}
 
 export async function loader({ request }: Route.LoaderArgs) {
   await requireUserId(request)

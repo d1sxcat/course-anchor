@@ -211,44 +211,26 @@ export default function OnboardingProviderRoute({
             </div>
           ) : null}
           <FormInput
-            {...fields.username}
+            {...fields.username.inputProps}
             label={'Username'}
             autoComplete="username"
-            errorId={fields.username.errorId}
-            ariaInvalid={fields.username.ariaInvalid}
-            id={fields.username.id}
-            errors={fields.username.errors}
           />
           <FormInput
-            {...fields.name}
+            {...fields.name.inputProps}
             label={'Name'}
             autoComplete="name"
-            errorId={fields.name.errorId}
-            ariaInvalid={fields.name.ariaInvalid}
-            id={fields.name.id}
-            errors={fields.name.errors}
           />
           <FormCheckbox
-            {...fields.agreeToTermsOfServiceAndPrivacyPolicy}
+            {...fields.agreeToTermsOfServiceAndPrivacyPolicy.checkboxProps}
             label={'Do you agree to our Terms of Service and Privacy Policy?'}
             horizontal
             controlFirst
-            id={fields.agreeToTermsOfServiceAndPrivacyPolicy.id}
-            aria-invalid={
-              fields.agreeToTermsOfServiceAndPrivacyPolicy.ariaInvalid
-            }
-            errorId={fields.agreeToTermsOfServiceAndPrivacyPolicy.errorId}
-            errors={fields.agreeToTermsOfServiceAndPrivacyPolicy.errors}
           />
           <FormCheckbox
-            {...fields.remember}
+            {...fields.remember.checkboxProps}
             label={'Remember me'}
             horizontal
             controlFirst
-            id={fields.remember.id}
-            aria-invalid={fields.remember.ariaInvalid}
-            errorId={fields.remember.errorId}
-            errors={fields.remember.errors}
           />
           {redirectTo ? (
             <input type="hidden" name="redirectTo" value={redirectTo} />

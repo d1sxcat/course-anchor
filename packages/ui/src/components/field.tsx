@@ -177,7 +177,7 @@ function FieldError({
   errors,
   ...props
 }: React.ComponentProps<"div"> & {
-  errors?: ({ message?: string } | undefined)[]
+  errors?: (string | undefined)[]
 }) {
   const content = useMemo(() => {
     if (children) {
@@ -188,19 +188,16 @@ function FieldError({
       return null
     }
 
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
-    ]
-
-    if (uniqueErrors.length === 1) {
-      return uniqueErrors[0]?.message
-    }
+    const uniqueErrors = [...new Set(errors)]
+    // if (uniqueErrors.length === 1) {
+    //   return uniqueErrors[0]
+    // }
 
     return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
+      <ul className="flex list-none flex-col gap-1">
         {uniqueErrors.map(
           (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
+            error && <li key={index}>{error}</li>
         )}
       </ul>
     )

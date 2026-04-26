@@ -126,5 +126,261 @@
   "./tests/fixtures/openimg/course-anchor-test-s3-eu-central-1-amazonaws-com/users/cmocyyvns00012yhj4h4d6wo2/profile-images/1777038714992-pd49apg7p2sd4seiuosr9rfg-downloaded-file-w-832-h-832-fit-base.avif": {
     "size": 8896,
     "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/public/img/ca-bg-1-png-w-1322-h-768-fit-base.avif": {
+    "size": 22920,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 51546,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/picsum/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6942,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 19466,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1000/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 12993,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/4495/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6553,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/904/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 14120,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1829/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 7062,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1586/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8125,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/5899/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8613,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1736/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 10457,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3543/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 4917,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7927/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 11442,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2086/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 9307,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1417/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6202,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3308/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6230,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/8442/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 13212,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/4828/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6143,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7646/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 11617,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/6282/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 9830,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9325/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 12879,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3370/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 10334,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/153/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 11604,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2597/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 12714,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/6987/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8611,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9481/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 10105,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/5051/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 7806,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7432/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 2191,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/876/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 9508,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7785/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 2191,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2397/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 7162,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2876/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6490,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3680/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 5529,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/5946/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 17105,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1772/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 10457,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/8655/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8566,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7632/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6799,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/8171/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 15141,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3674/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 5986,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9349/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6104,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1556/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 20304,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7939/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8921,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2131/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 16007,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/4053/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6400,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/6114/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 15888,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/6331/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 5475,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/5142/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 15141,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3581/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8995,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7373/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 10024,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9834/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 4482,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3885/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 9940,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3390/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 8883,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/1749/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 18727,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/8268/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 14597,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/7961/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6122,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9798/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6143,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9103/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 7204,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/9605/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 7657,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/3475/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 5619,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2000/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 6555,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/20456/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 1124,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/2456/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 5454,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/456/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 7588,
+    "contentType": "image/avif"
+  },
+  "./tests/fixtures/openimg/picsum-photos/seed/4569/1920/1080-w-1920-h-1080-fit-base.avif": {
+    "size": 86395,
+    "contentType": "image/avif"
   }
 }

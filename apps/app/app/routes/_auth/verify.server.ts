@@ -165,31 +165,6 @@ export async function validateRequest(
 			{ status: 400 },
 		)
 	}
-	// const submission = await parseWithZod(body, {
-	// 	schema: VerifySchema.superRefine(async (data, ctx) => {
-	// 		const codeIsValid = await isCodeValid({
-	// 			code: data[codeQueryParam],
-	// 			type: data[typeQueryParam],
-	// 			target: data[targetQueryParam],
-	// 		})
-	// 		if (!codeIsValid) {
-	// 			ctx.addIssue({
-	// 				path: ['code'],
-	// 				code: 'custom',
-	// 				message: `Invalid code`,
-	// 			})
-	// 			return
-	// 		}
-	// 	}),
-	// 	async: true,
-	// })
-
-	// if (submission.status !== 'success') {
-	// 	return data(
-	// 		{ result: submission.reply() },
-	// 		{ status: submission.status === 'error' ? 400 : 200 },
-	// 	)
-	// }
 
 	const { data: submissionValue } = result
 

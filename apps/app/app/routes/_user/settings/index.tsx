@@ -9,7 +9,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import { Camera } from 'lucide-react'
 import { Img } from 'openimg/react'
 import { z } from 'zod'
-import { FormErrors, useForm, FormInput } from '~/components/form'
+import { FormErrors, FormInput, useForm } from '~/components/form'
 import { LinkButton } from '~/components/ui/link'
 import { StatusButton } from '~/components/ui/status-button'
 import { requireUserId, sessionKey } from '~/lib/auth.server'
@@ -24,7 +24,7 @@ import { twoFAVerificationType } from './two-factor/_layout'
 const ProfileFormSchema = coerceFormValue(
   z.object({
     name: NameSchema.nullable().default(null),
-    username: UsernameSchema
+    username: UsernameSchema,
   })
 )
 
@@ -231,7 +231,7 @@ function UpdateProfile({
 }) {
   const fetcher = useFetcher<typeof profileUpdateAction>()
 
-  const {form, fields} = useForm(ProfileFormSchema,{
+  const { form, fields } = useForm(ProfileFormSchema, {
     id: 'edit-profile',
     lastResult: fetcher.data?.result,
     defaultValue: {
@@ -243,24 +243,8 @@ function UpdateProfile({
   return (
     <fetcher.Form {...form.props} method="POST">
       <div className="grid grid-cols-2 gap-x-10">
-				<FormInput
-					{...fields.username}
-					label={'Username'}
-					errors={fields.username.errors}
-					id={fields.username.id}
-					errorId={fields.username.errorId}
-					ariaInvalid={fields.username.ariaInvalid}
-					key={`${fields.username.defaultValue}-${fields.username.id}`} // need to remount this input if the default value changes to reset the async validation state
-				/>
-				<FormInput
-					{...fields.name}
-					label={'Name'}
-					errors={fields.name.errors}
-					id={fields.name.id}
-					errorId={fields.name.errorId}
-					ariaInvalid={fields.name.ariaInvalid}
-					key={`${fields.name.defaultValue}-${fields.name.id}`} // need to remount this input if the default value changes to reset the async validation state
-				/>
+        <FormInput {...fields.username.inputProps} label={'Username'} />
+        <FormInput {...fields.name.inputProps} label={'Name'} />
       </div>
 
       <FormErrors errors={form.errors} id={form.errorId} />
@@ -271,9 +255,7 @@ function UpdateProfile({
           // size="wide"
           name={'intent'}
           value={profileUpdateActionIntent}
-          status={
-            fetcher.state !== 'idle' ? 'pending' : 'idle'
-          }
+          status={fetcher.state !== 'idle' ? 'pending' : 'idle'}
         >
           Save changes
         </StatusButton>

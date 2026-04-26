@@ -1,4 +1,4 @@
-import { useMemo, useRef, type ReactNode } from 'react'
+import { useMemo, useRef, type ComponentProps, type ReactNode } from 'react'
 import {
   configureForms,
   useControl,
@@ -45,14 +45,17 @@ export type Fieldset<
   ErrorShape extends BaseErrorShape = BaseErrorShape,
 > = BaseFieldset<FieldShape, ErrorShape, CustomFieldMetadata>
 
-type FormBaseProps<FieldShape extends unknown = unknown> = {
-  label: ReactNode
+type FormBaseProps = {
+  id: string
+  label: string
   children: ReactNode
-  description?: ReactNode
+  errorId: string
+  errors?: string[]
+  ariaInvalid?: boolean
+  description?: string
   horizontal?: boolean
   controlFirst?: boolean
-  placeholder?: string
-} & BaseFieldMetadata<FieldShape>
+}
 
 const forms = configureForms({
   getConstraints,
@@ -66,9 +69,12 @@ const forms = configureForms({
           name: metadata.name,
           defaultValue: metadata.defaultValue,
           'aria-describedby': metadata.ariaDescribedBy,
-          required: metadata.required,
           'aria-invalid': metadata.ariaInvalid,
-        } satisfies Partial<React.ComponentProps<'input'>>
+          errorId: metadata.errorId,
+          errors: metadata.errors,
+          ariaInvalid: metadata.ariaInvalid,
+        } satisfies Partial<React.ComponentProps<'input'>> &
+          Partial<FormBaseProps>
       },
       get textareaProps() {
         return {
@@ -76,9 +82,12 @@ const forms = configureForms({
           name: metadata.name,
           defaultValue: metadata.defaultValue,
           'aria-describedby': metadata.ariaDescribedBy,
-          required: metadata.required,
           'aria-invalid': metadata.ariaInvalid,
-        } satisfies Partial<React.ComponentProps<'textarea'>>
+          errorId: metadata.errorId,
+          errors: metadata.errors,
+          ariaInvalid: metadata.ariaInvalid,
+        } satisfies Partial<React.ComponentProps<'textarea'>> &
+          Partial<FormBaseProps>
       },
       get checkboxProps() {
         return {
@@ -88,17 +97,26 @@ const forms = configureForms({
           defaultChecked: metadata.defaultChecked,
           'aria-describedby': metadata.ariaDescribedBy,
           'aria-invalid': metadata.ariaInvalid,
-        } satisfies Partial<React.ComponentProps<typeof Checkbox>>
+          errorId: metadata.errorId,
+          errors: metadata.errors,
+          ariaInvalid: metadata.ariaInvalid,
+        } satisfies Partial<React.ComponentProps<typeof Checkbox>> &
+          Partial<FormBaseProps>
       },
       get otpProps() {
         return {
           id: metadata.id,
-          name: metadata.name,
-          defaultValue: metadata.defaultValue,
-          'aria-describedby': metadata.ariaDescribedBy,
-          required: metadata.required,
-          'aria-invalid': metadata.ariaInvalid,
-        } satisfies Partial<React.ComponentProps<typeof InputOTP>>
+					name: metadata.name,
+					defaultValue: metadata.defaultValue,
+					'aria-describedby': metadata.ariaDescribedBy,
+					'aria-invalid': metadata.ariaInvalid,
+          errorId: metadata.errorId,
+          errors: metadata.errors,
+          ariaInvalid: metadata.ariaInvalid,
+					maxLength: 6,
+          pattern: REGEXP_ONLY_DIGITS_AND_CHARS
+        } satisfies Partial<React.ComponentProps<typeof InputOTP>> &
+					Partial<FormBaseProps>
       },
     }
   },
@@ -106,17 +124,17 @@ const forms = configureForms({
 
 export const useForm = forms.useForm
 
-function FormBase<FieldShape extends unknown = unknown>({
+function FormBase({
+  id,
+  errorId,
+  errors,
   children,
   label,
   description,
   controlFirst,
   horizontal,
-  errorId,
-  errors,
   ariaInvalid,
-  id,
-}: FormBaseProps<FieldShape>) {
+}: FormBaseProps) {
   const labelElement = (
     <>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
@@ -124,7 +142,7 @@ function FormBase<FieldShape extends unknown = unknown>({
     </>
   )
   const errorElem = ariaInvalid && (
-    <FieldError id={errorId}>{errors}</FieldError>
+    <FieldError id={errorId} errors={errors}/>
   )
   return (
     <Field
@@ -151,87 +169,125 @@ function FormBase<FieldShape extends unknown = unknown>({
 }
 
 export const FormInput = ({
-  inputProps,
-  placeholder,
-  type = 'text',
-  autoComplete,
+  label,
+  description,
+  errorId,
+  errors,
+  ariaInvalid,
+  controlFirst = false,
+  horizontal = false,
   ...props
-}: FieldMetadata<string | null | undefined> &
-  Omit<FormBaseProps<string | null | undefined>, 'children'> & {
-    type?: 'text' | 'email' | 'password'
-    autoComplete?: React.HTMLInputAutoCompleteAttribute
-  }) => {
+}: FieldMetadata<string | null | undefined>['inputProps'] &
+  React.ComponentProps<typeof Input> &
+  Omit<FormBaseProps, 'children'>) => {
   return (
-    <FormBase {...props}>
-      <Input
-        {...inputProps}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        type={type}
-      />
+    <FormBase
+      label={label}
+      description={description}
+      errorId={errorId}
+      errors={errors}
+      ariaInvalid={ariaInvalid}
+      controlFirst={controlFirst}
+      horizontal={horizontal}
+      id={props.id}
+    >
+      <Input {...props} key={`${props.defaultValue}-${props.name}`} />
     </FormBase>
   )
 }
 
 export const FormTextarea = ({
-  textareaProps,
-  placeholder,
+  label,
+  description,
+  errorId,
+  errors,
+  ariaInvalid,
+  controlFirst,
+  horizontal,
   ...props
-}: FieldMetadata<string> & Omit<FormBaseProps<string>, 'children'>) => {
+}: FieldMetadata<string | null | undefined>['textareaProps'] &
+  ComponentProps<typeof Textarea> &
+  Omit<FormBaseProps, 'children'>) => {
   return (
-    <FormBase {...props}>
-      <Textarea
-        {...textareaProps}
-        placeholder={placeholder}
-        className="resize-none"
-      />
+    <FormBase
+      label={label}
+      description={description}
+      errorId={errorId}
+      errors={errors}
+      ariaInvalid={ariaInvalid}
+      controlFirst={controlFirst}
+      horizontal={horizontal}
+      id={props.id}
+    >
+      <Textarea {...props} key={`${props.defaultValue}-${props.name}`} />
     </FormBase>
   )
 }
 
 export function FormCheckbox({
-  checkboxProps,
+  label,
+  description,
+  errorId,
+  errors,
+  ariaInvalid,
+  controlFirst,
+  horizontal,
+  defaultChecked,
+  value,
+  id,
+  name,
   ...props
-}: FieldMetadata<boolean> & Omit<FormBaseProps<boolean>, 'children'>) {
+}: FieldMetadata<boolean>['checkboxProps'] &
+  ComponentProps<typeof Checkbox> &
+  Omit<FormBaseProps, 'children'>) {
   const checkboxRef = useRef<React.ComponentRef<typeof Checkbox>>(null)
   const { checked, change, register, blur } = useControl({
-    defaultChecked: checkboxProps.defaultChecked,
-    value: checkboxProps.value,
+    defaultChecked,
+    value,
     onFocus() {
       checkboxRef.current?.focus()
     },
   })
 
   return (
-    <FormBase {...props}>
-      <input
-        type="checkbox"
-        ref={register}
-        id={checkboxProps.id}
-        name={checkboxProps.name}
-        hidden
-      />
+    <FormBase
+      label={label}
+      description={description}
+      errorId={errorId}
+      errors={errors}
+      ariaInvalid={ariaInvalid}
+      controlFirst={controlFirst}
+      horizontal={horizontal}
+      id={id}
+    >
+      <input type="checkbox" ref={register} name={name} hidden />
       <Checkbox
+        {...props}
+        id={id}
         ref={checkboxRef}
         checked={checked}
         onCheckedChange={checked => change(checked)}
         onBlur={() => blur()}
-        className="focus:ring-stone-950 focus:ring-2 focus:ring-offset-2"
+        // className="focus:ring-stone-950 focus:ring-2 focus:ring-offset-2"
       />
     </FormBase>
   )
 }
 
 export function FormOTP({
-  otpProps,
   errorId,
   errors,
   ariaInvalid,
+  defaultValue,
   pattern = REGEXP_ONLY_DIGITS_AND_CHARS,
-}: FieldMetadata<string>) {
+  id,
+  name,
+  ...props
+}: FieldMetadata<string>['otpProps'] &
+  Omit<ComponentProps<typeof InputOTP>, 'children' | 'render'>) {
   const inputOTPRef = useRef<React.ComponentRef<typeof InputOTP>>(null)
-  const { value, change, register, blur } = useControl({
-    defaultValue: otpProps.defaultValue,
+  const { value, change, register } = useControl({
+    defaultValue,
     onFocus() {
       inputOTPRef.current?.focus()
     },
@@ -240,9 +296,11 @@ export function FormOTP({
   return (
     // <FormBase {...props}>
     <>
-      <input ref={register} id={otpProps.id} name={otpProps.name} hidden />
+      <input ref={register} id={id} name={name} hidden />
       <InputOTP
         ref={inputOTPRef}
+        {...props}
+				render={undefined}
         value={value}
         onChange={value => change(value)}
         onBlur={() => {
@@ -252,7 +310,6 @@ export function FormOTP({
         }}
         maxLength={6}
         pattern={pattern}
-        aria-describedby={otpProps['aria-describedby']}
       >
         <InputOTPGroup>
           <InputOTPSlot index={0} />
@@ -273,9 +330,5 @@ export function FormOTP({
 }
 
 export function FormErrors({ errors, id }: { errors?: string[]; id: string }) {
-  const formattedErrors = useMemo(
-    () => errors?.map(error => ({ message: error })) || [],
-    [errors]
-  )
-  return <FieldError id={id} errors={formattedErrors} />
+  return <FieldError id={id} errors={errors} />
 }

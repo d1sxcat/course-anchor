@@ -87,7 +87,9 @@ export default function ResetPasswordPage({
 
   const {form, fields} = useForm(ResetPasswordSchema,{
     id: 'reset-password',
-    lastResult: actionData?.result
+    lastResult: actionData?.result,
+    shouldValidate: 'onSubmit',
+    shouldRevalidate: 'onInput'
   })
 
   return (
@@ -102,19 +104,14 @@ export default function ResetPasswordPage({
       <div className="mx-auto mt-16 max-w-sm min-w-full sm:min-w-92">
         <Form method="POST" {...form.props}>
 					<FormInput
-						{...fields.password}
-						errors={fields.password.errors}
-						errorId={fields.password.errorId}
-						id={fields.password.id}
+						{...fields.password.inputProps}
 						type="password"
 						label="New Password"
 						autoComplete="new-password"
+						autoFocus
 						/>
           <FormInput
-						{...fields.confirmPassword}
-						errors={fields.confirmPassword.errors}
-						errorId={fields.confirmPassword.errorId}
-						id={fields.confirmPassword.id}
+						{...fields.confirmPassword.inputProps}
 						type="password"
 						label="Confirm New Password"
 						autoComplete="new-password"

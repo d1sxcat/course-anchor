@@ -38,7 +38,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     headers,
     allowlistedOrigins: [
       getDomainUrl(request),
-			'https://course-anchor-test.s3.eu-central-1.amazonaws.com'
+			'https://course-anchor-test.s3.eu-central-1.amazonaws.com',
+			'https://picsum.photos'
     ].filter(Boolean),
     cacheFolder: await getCacheDir(),
     getImgSource: async () => {
@@ -59,6 +60,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         return {
           type: 'fetch',
           url: src,
+					headers: {}
         }
       }
       // Retrieve image from filesystem (public folder)

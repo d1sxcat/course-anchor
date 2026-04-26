@@ -1,9 +1,9 @@
-import { data, Form, redirect, useSearchParams } from 'react-router'
-import { Fragment } from 'react/jsx-runtime'
+import { data, Form, Link, redirect, useSearchParams } from 'react-router'
 import { parseSubmission, report } from '@conform-to/react/future'
 import { coerceFormValue, formatResult } from '@conform-to/zod/v4/future'
-import { FieldGroup, FieldSeparator } from '@course-anchor/ui/components/field'
+import { FieldSeparator } from '@course-anchor/ui/components/field'
 import * as E from '@react-email/components'
+import { LogIn } from 'lucide-react'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '~/components/error-boundary'
@@ -130,59 +130,81 @@ export default function SignupRoute({ actionData }: Route.ComponentProps) {
   const { form, fields } = useForm(SignupSchema, {
     id: 'signup-form',
     lastResult: actionData?.result,
-    onError(poop) {
-      console.log({ poop })
-    },
+    shouldRevalidate: 'onInput',
+    shouldValidate: 'onSubmit',
   })
 
   return (
-    <div className="container flex flex-col justify-center pt-20 pb-32">
-      <div className="text-center">
-        <h1 className="text-h1">Let's start your journey!</h1>
-        <p className="text-body-md text-muted-foreground mt-3">
+    //<div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <div className="mx-auto w-full max-w-sm lg:w-96">
+      <div>
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          className="h-10 w-auto dark:hidden"
+        />
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+          className="h-10 w-auto not-dark:hidden"
+        />
+        <h2 className="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
           Please enter your email.
+        </h2>
+        <p className="mt-2 text-sm/6 text-gray-500 dark:text-gray-400">
+          Already a member?{' '}
+          <Link
+            to="/login"
+            className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+          >
+            Sign in
+          </Link>
         </p>
       </div>
-      <div className="mx-auto mt-16 max-w-sm min-w-full sm:min-w-92">
-        <Form method="POST" {...form.props}>
-          <HoneypotInputs />
-          <FieldGroup>
+
+      <div className="mt-10">
+        <div>
+          <Form method="POST" {...form.props} className="space-y-6">
+            <HoneypotInputs />
             <FormInput
-              {...fields.email}
-              errors={fields.email.errors}
-              errorId={fields.email.errorId}
-              id={fields.email.id}
+              {...fields.email.inputProps}
               label="Email"
               type="email"
-              ariaInvalid={fields.email.ariaInvalid}
+              autoComplete="email"
+              autoFocus
             />
             <FormErrors id={form.errorId} errors={form.errors} />
-            <StatusButton
-              className="w-full"
-              status={isPending ? 'pending' : 'idle'}
-              type="submit"
-              disabled={isPending}
-            >
-              Submit
-            </StatusButton>
-          </FieldGroup>
-        </Form>
-        <ul className="flex flex-col gap-4 py-4">
-          {providerNames.map(providerName => (
-            <Fragment key={providerName}>
-              <FieldSeparator />
-              <li>
+            <div>
+              <StatusButton
+                className="w-full font-semibold"
+                status={isPending ? 'pending' : 'idle'}
+                type="submit"
+                size={'lg'}
+                disabled={isPending}
+                icon={<LogIn />}
+              >
+                Submit
+              </StatusButton>
+            </div>
+          </Form>
+        </div>
+        <div className="mt-10">
+          <FieldSeparator>Or sign up with</FieldSeparator>
+          <ul className="flex flex-col gap-4 mt-6">
+            {providerNames.map(providerName => (
+              <li key={providerName}>
                 <ProviderConnectionForm
                   type="Signup"
                   providerName={providerName}
                   redirectTo={redirectTo}
                 />
               </li>
-            </Fragment>
-          ))}
-        </ul>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
+    //</div>
   )
 }
 

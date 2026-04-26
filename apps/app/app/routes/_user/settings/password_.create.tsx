@@ -127,24 +127,16 @@ export default function CreatePasswordRoute({
   return (
     <Form method="POST" {...form.props} className="mx-auto max-w-md">
       <FormInput
-        {...fields.password}
+        {...fields.password.inputProps}
         type="password"
         autoComplete="new-password"
         label="New Password"
-        id={fields.password.id}
-        errorId={fields.password.errorId}
-        errors={fields.password.errors}
-        ariaInvalid={fields.password.ariaInvalid}
       />
       <FormInput
-        {...fields.confirmPassword}
+        {...fields.confirmPassword.inputProps}
         type="password"
         autoComplete="new-password"
         label="Confirm New Password"
-        id={fields.confirmPassword.id}
-        errorId={fields.confirmPassword.errorId}
-        errors={fields.confirmPassword.errors}
-        ariaInvalid={fields.confirmPassword.ariaInvalid}
       />
       <FormErrors id={form.errorId} errors={form.errors} />
       <div className="grid w-full grid-cols-2 gap-6">

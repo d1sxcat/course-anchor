@@ -4,7 +4,6 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '~/components/error-boundary'
 import { FormErrors, FormOTP, useForm } from '~/components/form'
-import { Spacer } from '~/components/ui/spacer'
 import { StatusButton } from '~/components/ui/status-button'
 import { checkHoneypot } from '~/lib/honeypot.server'
 import { useIsPending } from '~/lib/misc'
@@ -44,8 +43,10 @@ export default function VerifyRoute({ actionData }: Route.ComponentProps) {
 
   const checkEmail = (
     <>
-      <h1 className="text-h1">Check your email</h1>
-      <p className="text-body-md text-muted-foreground mt-3">
+      <h2 className="mt-8 text-2xl/9 font-bold tracking-tight">
+        Check your email
+      </h2>
+      <p className="text-muted-foreground mt-3">
         We've sent you a code to verify your email address.
       </p>
     </>
@@ -57,8 +58,10 @@ export default function VerifyRoute({ actionData }: Route.ComponentProps) {
     'change-email': checkEmail,
     '2fa': (
       <>
-        <h1 className="text-h1">Check your 2FA app</h1>
-        <p className="text-body-md text-muted-foreground mt-3">
+        <h2 className="mt-8 text-2xl/9 font-bold tracking-tight">
+          Check your 2FA app
+        </h2>
+        <p className="text-muted-foreground mt-3">
           Please enter your 2FA code to verify your identity.
         </p>
       </>
@@ -77,29 +80,40 @@ export default function VerifyRoute({ actionData }: Route.ComponentProps) {
   })
 
   return (
-    <main className="container flex flex-col justify-center pt-20 pb-32">
-      <div className="text-center">
-        {type ? headings[type] : 'Invalid Verification Type'}
+    //<div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <div className="mx-auto w-full max-w-sm lg:w-96">
+      <div>
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          className="h-10 w-auto dark:hidden"
+        />
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+          className="h-10 w-auto not-dark:hidden"
+        />
+        {type ? (
+          headings[type]
+        ) : (
+          <h2 className="mt-8 text-2xl/9 font-bold tracking-tight">
+            Invalid Verification Type
+          </h2>
+        )}
       </div>
 
-      <Spacer size="xs" />
-
-      <div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
+      <div className="mt-10">
         <div>
-          <FormErrors errors={form.errors} id={form.errorId} />
-        </div>
-        <div className="flex w-full gap-2">
-          <Form method="POST" {...form.props} className="flex-1">
+          <Form {...form.props} method="POST" className="space-y-6">
             <HoneypotInputs />
-            <div className="flex items-center justify-center">
-              <FormOTP
-                {...fields[codeQueryParam]}
-                errorId={fields[codeQueryParam].errorId}
-                id={fields[codeQueryParam].id}
-                ariaInvalid={fields[codeQueryParam].ariaInvalid}
-                errors={fields[codeQueryParam].errors}
-              />
-            </div>
+            <FormErrors errors={form.errors} id={form.errorId} />
+            <FormOTP
+              {...fields[codeQueryParam].otpProps}
+              errorId={fields[codeQueryParam].errorId}
+              ariaInvalid={fields[codeQueryParam].ariaInvalid}
+              errors={fields[codeQueryParam].errors}
+            />
+
             <input
               name={fields[typeQueryParam].name}
               id={fields[typeQueryParam].id}
@@ -119,9 +133,10 @@ export default function VerifyRoute({ actionData }: Route.ComponentProps) {
               type="hidden"
             />
             <StatusButton
-              className="w-full"
+              className="w-full font-semibold"
               status={isPending ? 'pending' : 'idle'}
               type="submit"
+							size={'lg'}
               disabled={isPending}
             >
               Submit
@@ -129,8 +144,64 @@ export default function VerifyRoute({ actionData }: Route.ComponentProps) {
           </Form>
         </div>
       </div>
-    </main>
+    </div>
+    //</div>
   )
+  {
+    /* // <main className="container flex flex-col justify-center pt-20 pb-32">
+    //   <div className="text-center">
+    //     
+    //   </div>
+
+    //   <Spacer size="xs" />
+
+    //   <div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
+    //     <div>
+    //       <FormErrors errors={form.errors} id={form.errorId} />
+    //     </div>
+    //     <div className="flex w-full gap-2">
+    //       <Form method="POST" {...form.props} className="flex-1">
+    //         <HoneypotInputs />
+    //         <div className="flex items-center justify-center">
+    //           <FormOTP
+    //             {...fields[codeQueryParam]}
+    //             errorId={fields[codeQueryParam].errorId}
+    //             id={fields[codeQueryParam].id}
+    //             ariaInvalid={fields[codeQueryParam].ariaInvalid}
+    //             errors={fields[codeQueryParam].errors}
+    //           />
+    //         </div>
+    //         <input
+    //           name={fields[typeQueryParam].name}
+    //           id={fields[typeQueryParam].id}
+    //           value={fields[typeQueryParam].defaultValue}
+    //           type="hidden"
+    //         />
+    //         <input
+    //           name={fields[targetQueryParam].name}
+    //           id={fields[targetQueryParam].id}
+    //           value={fields[targetQueryParam].defaultValue}
+    //           type="hidden"
+    //         />
+    //         <input
+    //           name={fields[redirectToQueryParam].name}
+    //           id={fields[redirectToQueryParam].id}
+    //           value={fields[redirectToQueryParam].defaultValue}
+    //           type="hidden"
+    //         />
+    //         <StatusButton
+    //           className="w-full"
+    //           status={isPending ? 'pending' : 'idle'}
+    //           type="submit"
+    //           disabled={isPending}
+    //         >
+    //           Submit
+    //         </StatusButton>
+    //       </Form>
+    //     </div>
+    //   </div>
+    // </main> */
+  }
 }
 
 export function ErrorBoundary() {

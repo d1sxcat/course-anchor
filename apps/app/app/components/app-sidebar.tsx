@@ -1,9 +1,10 @@
-import { NavLink, useMatches } from 'react-router'
+import { Form, Link, NavLink, useFetcher, useMatches } from 'react-router'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@course-anchor/ui/components/avatar'
+import { Button } from '@course-anchor/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,14 +51,14 @@ import {
   Trash2,
   User,
 } from 'lucide-react'
-import { boolean, z } from 'zod'
+import { z } from 'zod'
 import { useRequestInfo } from '~/lib/request-info'
 import { useOptionalUser, useUser } from '~/lib/user'
 import { ThemeSwitch } from '~/routes/resources/theme-switch'
 import { getUserImgSrc } from '../lib/misc'
 
 export const SidebarHandle = z.object({
-  sidebar: z.enum(['settings', 'users', 'default'])
+  sidebar: z.enum(['settings', 'users', 'default']),
 })
 export type SidebarHandle = z.infer<typeof SidebarHandle>
 
@@ -277,26 +278,24 @@ function SettingsSidebar() {
         <SidebarInput placeholder="Type to search..." />
       </SidebarHeader>
       <SidebarContent>
-        {/* <SidebarGroup className="px-0">
-            <SidebarGroupContent>
-              {data.mails.map(mail => (
-                <a
-                  href="#"
-                  key={mail.email}
-                  className="flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <span>{mail.name}</span>{' '}
-                    <span className="ml-auto text-xs">{mail.date}</span>
-                  </div>
-                  <span className="font-medium">{mail.subject}</span>
-                  <span className="line-clamp-2 w-65 text-xs whitespace-break-spaces">
-                    {mail.teaser}
-                  </span>
-                </a>
+        <SidebarGroup className="px-0">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {data.navSub.settings.map(sub => (
+                <SidebarMenuItem key={sub.title}>
+                  <SidebarMenuLink
+                    to={sub.url}
+                    className="px-2.5 md:px-2"
+                    inactiveClassName="opacity-80"
+                    end
+                  >
+                    {sub.title}
+                  </SidebarMenuLink>
+                </SidebarMenuItem>
               ))}
-            </SidebarGroupContent>
-          </SidebarGroup> */}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   )
@@ -344,6 +343,12 @@ function UserSidebar() {
 function NavUser() {
   const { isMobile } = useSidebar()
   const user = useUser()
+
+  const logout = useFetcher()
+
+  const handleLogout = () => {
+    logout.submit(null, { method: 'post', action: '/logout' })
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -405,7 +410,7 @@ function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem render={<Link to="/settings" />}>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
@@ -419,9 +424,9 @@ function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleLogout()}>
               <LogOut />
-              Log out
+              Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
