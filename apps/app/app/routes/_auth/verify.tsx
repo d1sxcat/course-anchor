@@ -109,11 +109,7 @@ export default function VerifyRoute({ actionData }: Route.ComponentProps) {
             <FormErrors errors={form.errors} id={form.errorId} />
             <FormOTP
               {...fields[codeQueryParam].otpProps}
-              errorId={fields[codeQueryParam].errorId}
-              ariaInvalid={fields[codeQueryParam].ariaInvalid}
-              errors={fields[codeQueryParam].errors}
             />
-
             <input
               name={fields[typeQueryParam].name}
               id={fields[typeQueryParam].id}

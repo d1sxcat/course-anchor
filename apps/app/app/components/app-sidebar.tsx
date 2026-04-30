@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Form, Link, NavLink, useFetcher, useMatches } from 'react-router'
 import {
   Avatar,
@@ -11,7 +12,11 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@course-anchor/ui/components/dropdown-menu'
 import {
@@ -44,7 +49,9 @@ import {
   CreditCard,
   File,
   Inbox,
+  Languages,
   LogOut,
+  Paintbrush,
   Send,
   Settings,
   Sparkles,
@@ -54,7 +61,8 @@ import {
 import { z } from 'zod'
 import { useRequestInfo } from '~/lib/request-info'
 import { useOptionalUser, useUser } from '~/lib/user'
-import { ThemeSwitch } from '~/routes/resources/theme-switch'
+import { LanguageDropdown } from '~/routes/resources/locales'
+import { ThemeDropdown } from '~/routes/resources/theme-switch'
 import { getUserImgSrc } from '../lib/misc'
 
 export const SidebarHandle = z.object({
@@ -343,6 +351,8 @@ function UserSidebar() {
 function NavUser() {
   const { isMobile } = useSidebar()
   const user = useUser()
+  const requestInfo = useRequestInfo()
+  const { t } = useTranslation()
 
   const logout = useFetcher()
 
@@ -405,7 +415,7 @@ function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
-                Upgrade to Pro
+                {t('appSidebar.upgrade')}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -414,10 +424,26 @@ function NavUser() {
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Paintbrush />
+                  {t('appSidebar.theme')}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <ThemeDropdown userPreference={requestInfo.userPrefs.theme} />
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Languages />
+                  {t('appSidebar.language')}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <LanguageDropdown
+                    userPreference={requestInfo.userPrefs.locale}
+                  />
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
@@ -436,7 +462,6 @@ function NavUser() {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const requestInfo = useRequestInfo()
   const { setOpen } = useSidebar()
   const mode = useSidebarMatches()
   return (
@@ -493,7 +518,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
         <SidebarFooter>
           <NavUser />
-          <ThemeSwitch userPreference={requestInfo.userPrefs.theme} />
+          {/* <ThemeDropdown /> */}
         </SidebarFooter>
       </Sidebar>
       {mode

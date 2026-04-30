@@ -168,77 +168,90 @@ export default function OnboardingRoute({
       remember: false,
     },
     lastResult: actionData?.result,
+    shouldValidate: 'onSubmit',
+    shouldRevalidate: 'onBlur',
   })
 
   return (
-    <div className="container flex min-h-full flex-col justify-center pt-20 pb-32">
-      <div className="mx-auto w-full max-w-lg">
-        <div className="flex flex-col gap-3 text-center">
-          <h1 className="text-h1">Welcome aboard {loaderData.email}!</h1>
-          <p className="text-body-md text-muted-foreground">
-            Please enter your details.
-          </p>
+    <div className="mx-auto w-full max-w-sm lg:w-96">
+      <div>
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          className="h-10 w-auto dark:hidden"
+        />
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+          className="h-10 w-auto not-dark:hidden"
+        />
+        <h2 className="mt-8 text-2xl/9 font-bold tracking-tight">
+          Welcome aboard {loaderData.email}!
+        </h2>
+        <p className="mt-2 text-sm/6 text-muted-foreground">
+          Please enter your details.
+        </p>
+      </div>
+
+      <div className="mt-10">
+        <div>
+          <Form method="POST" className="space-y-4" {...form.props}>
+            <HoneypotInputs />
+            <FormInput
+              {...fields.username.inputProps}
+              label="Username"
+              autoComplete="username"
+            />
+            <FormInput
+              {...fields.name.inputProps}
+              label="Name"
+              autoComplete="name"
+            />
+            <FormInput
+              {...fields.password.inputProps}
+              label="Password"
+              type="password"
+              autoComplete="new-password"
+            />
+            <FormInput
+              {...fields.confirmPassword.inputProps}
+              label="Confirm Password"
+              type="password"
+              autoComplete="new-password"
+            />
+            <FormCheckbox
+              {...fields.agreeToTermsOfServiceAndPrivacyPolicy.checkboxProps}
+              horizontal
+              controlFirst
+              label="I agree to the Terms of Service and Privacy Policy"
+            />
+            <FormCheckbox
+              {...fields.remember.checkboxProps}
+              horizontal
+              controlFirst
+              label="Remember me"
+            />
+            <input
+              type="hidden"
+              name={fields.redirectTo.name}
+              value={fields.redirectTo.defaultValue ?? ''}
+            />
+
+            <FormErrors errors={form.errors} id={form.errorId} />
+
+            <div className="flex items-center justify-between gap-6">
+              <StatusButton
+                className="w-full font-semibold"
+                size={'lg'}
+                status={isPending ? 'pending' : 'idle'}
+                type="submit"
+                disabled={isPending}
+              >
+                Create an account
+              </StatusButton>
+            </div>
+          </Form>
         </div>
-        <Spacer size="xs" />
-        <Form
-          method="POST"
-          className="mx-auto max-w-sm min-w-full sm:min-w-92"
-          {...form.props}
-        >
-          <HoneypotInputs />
-          <FormInput
-            {...fields.username.inputProps}
-            label="Username"
-            autoComplete="username"
-          />
-          <FormInput
-            {...fields.name.inputProps}
-            label="Name"
-            autoComplete="name"
-          />
-          <FormInput
-            {...fields.password.inputProps}
-            label="Password"
-            type="password"
-            autoComplete="new-password"
-          />
-          <FormInput
-            {...fields.confirmPassword.inputProps}
-            label="Confirm Password"
-            type="password"
-            autoComplete="new-password"
-          />
-          <FormCheckbox
-            {...fields.agreeToTermsOfServiceAndPrivacyPolicy.checkboxProps}
-            horizontal
-            controlFirst
-            label="I agree to the Terms of Service and Privacy Policy"
-          />
-          <FormCheckbox
-            {...fields.remember.checkboxProps}
-            horizontal
-            controlFirst
-            label="Remember me"
-          />
-          <input
-            type="hidden"
-            name={fields.redirectTo.name}
-            value={fields.redirectTo.defaultValue ?? ''}
-          />
-
-          <FormErrors errors={form.errors} id={form.errorId} />
-
-          <div className="flex items-center justify-between gap-6">
-            <StatusButton
-              className="w-full"
-              status={isPending ? 'pending' : 'idle'}
-              type="submit"
-              disabled={isPending}
-            >
-              Create an account
-            </StatusButton>
-          </div>
-        </Form>
       </div>
     </div>
   )

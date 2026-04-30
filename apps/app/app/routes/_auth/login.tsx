@@ -17,6 +17,8 @@ import { getErrorMessage, useIsPending } from '~/lib/misc'
 import { PasswordSchema, UsernameSchema } from '~/lib/user-validation'
 import { type Route } from './+types/login'
 import { handleNewSession } from './login.server'
+import { useTranslation } from 'react-i18next'
+import { getInstance } from "~/middleware/i18next";
 
 const LoginFormSchema = coerceFormValue(
   z.object({
@@ -38,10 +40,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {}
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   await requireAnonymous(request)
   const formData = await request.formData()
   await checkHoneypot(formData)
+	const { t } = getInstance(context)
   const submission = parseSubmission(formData)
   const result = LoginFormSchema.safeParse(submission.payload)
   if (!result.success) {
@@ -55,7 +58,7 @@ export async function action({ request }: Route.ActionArgs) {
     return data(
       {
         result: report(submission, {
-          error: { formErrors: ['Invalid username or password'] },
+          error: { formErrors: [t('auth:login.invalidCredentials')] },
         }),
       },
       { status: 400 }
@@ -75,6 +78,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
   const isPending = useIsPending()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo')
+	const { t } = useTranslation('auth')
 
   const { form, fields } = useForm(LoginFormSchema, {
     id: 'login-form',
@@ -98,15 +102,15 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
           className="h-10 w-auto not-dark:hidden"
         />
         <h2 className="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
-          Sign in to your account
+          {t('login.title')}
         </h2>
         <p className="mt-2 text-sm/6 text-gray-500 dark:text-gray-400">
-          Not a member?{' '}
+          {t('login.notAMember')}{' '}
           <Link
             to="/signup"
             className="font-semibold text-primary hover:text-primary/90"
           >
-            Start a 14 day free trial
+            {t('login.startTrial')}
           </Link>
         </p>
       </div>
@@ -117,28 +121,30 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
             <HoneypotInputs />
             <FormInput
               {...fields.username.inputProps}
-              label="Username"
+              label={t('login.username')}
               autoComplete="username"
+							placeholder={t('login.username')}
               autoFocus
             />
             <FormInput
               {...fields.password.inputProps}
-              label="Password"
+              label={t('login.password')}
               type="password"
               autoComplete="current-password"
+							placeholder={t('login.password')}
             />
             <div className="flex items-center justify-between">
               <div className="flex">
                 <FormCheckbox
                   {...fields.remember.checkboxProps}
-                  label="Remember me"
+                  label={t('login.rememberMe')}
                   controlFirst
                   horizontal
                 />
               </div>
               <div className="text-sm/6">
                 <Link to="/forgot-password" className="font-semibold text-primary hover:text-primary/90">
-                  Forgot password?
+                  {t('login.forgotPassword')}
                 </Link>
               </div>
             </div>
@@ -158,7 +164,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
                 disabled={isPending}
                 icon={<LogIn />}
               >
-                Sign in
+                {t('signIn')}
               </StatusButton>
             </div>
           </Form>
@@ -170,7 +176,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
           </div>
         </div>
         <div className="mt-10">
-          <FieldSeparator>Or continue with</FieldSeparator>
+          <FieldSeparator>{t('login.orContinueWith')}</FieldSeparator>
           <ul className="flex flex-col gap-4 mt-6">
             {providerNames.map(providerName => (
               <li key={providerName}>
@@ -208,22 +214,23 @@ function PasskeyLogin({
 }) {
   const [isPending] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const { t } = useTranslation('auth')
   const [passkeyMessage, setPasskeyMessage] = useOptimistic<string | null>(
-    'Login with a passkey'
+    t('passkey.loginWithPasskey')
   )
   const navigate = useNavigate()
 
   async function handlePasskeyLogin() {
     try {
-      setPasskeyMessage('Generating Authentication Options')
+      setPasskeyMessage(t('passkey.generatingOptions'))
       // Get authentication options from the server
       const optionsResponse = await fetch('/webauthn/authentication')
       const json = await optionsResponse.json()
       const { options } = AuthenticationOptionsSchema.parse(json)
 
-      setPasskeyMessage('Requesting your authorization')
+      setPasskeyMessage(t('passkey.requestingAuthorization'))
       const authResponse = await startAuthentication({ optionsJSON: options })
-      setPasskeyMessage('Verifying your passkey')
+      setPasskeyMessage(t('passkey.verifyingPasskey'))
 
       // Verify the authentication with the server
       const verificationResponse = await fetch('/webauthn/authentication', {
@@ -246,11 +253,11 @@ function PasskeyLogin({
       }
       const { location } = parsedResult.data
 
-      setPasskeyMessage("You're logged in! Navigating...")
+      setPasskeyMessage(t('passkey.loggedIn'))
       await navigate(location ?? '/')
     } catch (e) {
       const errorMessage = getErrorMessage(e)
-      setError(`Failed to authenticate with passkey: ${errorMessage}`)
+      setError(t('passkey.failed', { error: errorMessage }))
     }
   }
 

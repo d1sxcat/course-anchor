@@ -25,6 +25,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from '@course-anchor/ui/components/input-otp'
+import { RadioGroup } from '@course-anchor/ui/components/radio-group'
 import { Textarea } from '@course-anchor/ui/components/textarea'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 
@@ -106,17 +107,31 @@ const forms = configureForms({
       get otpProps() {
         return {
           id: metadata.id,
-					name: metadata.name,
-					defaultValue: metadata.defaultValue,
-					'aria-describedby': metadata.ariaDescribedBy,
+          name: metadata.name,
+          defaultValue: metadata.defaultValue,
+          'aria-describedby': metadata.ariaDescribedBy,
+          'aria-invalid': metadata.ariaInvalid,
+          errorId: metadata.errorId,
+          errors: metadata.errors,
+          ariaInvalid: metadata.ariaInvalid,
+          maxLength: 6,
+          pattern: REGEXP_ONLY_DIGITS_AND_CHARS,
+        } satisfies Partial<React.ComponentProps<typeof InputOTP>> &
+          Partial<FormBaseProps>
+      },
+
+      get radioGroupProps() {
+        return {
+          id: metadata.id,
+          name: metadata.name,
+          defaultValue: metadata.defaultValue,
+          'aria-describedby': metadata.ariaDescribedBy,
 					'aria-invalid': metadata.ariaInvalid,
           errorId: metadata.errorId,
           errors: metadata.errors,
           ariaInvalid: metadata.ariaInvalid,
-					maxLength: 6,
-          pattern: REGEXP_ONLY_DIGITS_AND_CHARS
-        } satisfies Partial<React.ComponentProps<typeof InputOTP>> &
-					Partial<FormBaseProps>
+        } satisfies Partial<React.ComponentProps<typeof RadioGroup>> &
+          Partial<FormBaseProps>
       },
     }
   },
@@ -141,9 +156,7 @@ function FormBase({
       {description && <FieldDescription>{description}</FieldDescription>}
     </>
   )
-  const errorElem = ariaInvalid && (
-    <FieldError id={errorId} errors={errors}/>
-  )
+  const errorElem = ariaInvalid && <FieldError id={errorId} errors={errors} />
   return (
     <Field
       data-invalid={ariaInvalid}
@@ -300,7 +313,7 @@ export function FormOTP({
       <InputOTP
         ref={inputOTPRef}
         {...props}
-				render={undefined}
+        render={undefined}
         value={value}
         onChange={value => change(value)}
         onBlur={() => {
